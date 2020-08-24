@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-@Entity(name="users15")
+@Entity(name="users")
 public class UserEntity implements Serializable {
     private static final long serialVersionUID = 5512315223586710044L;
 
@@ -23,7 +23,7 @@ public class UserEntity implements Serializable {
     @Column(nullable = false, length = 50)
     private String lastname;
 
-    @Column(nullable = false, length = 120)
+    @Column(nullable = false, length = 120, unique = true)
     private String email;
 
     @Column(nullable = false)
