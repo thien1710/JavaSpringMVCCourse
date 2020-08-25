@@ -1,5 +1,6 @@
 package com.example.demo.ui.controller;
 
+import com.example.demo.config.Configs;
 import com.example.demo.service.UserService;
 import com.example.demo.shared.dto.UserDto;
 import com.example.demo.ui.model.request.UserDetailsRequestModel;
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping(Configs.URL.USER.SIGN_UP)
 public class UserController {
 
     @Autowired
