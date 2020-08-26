@@ -60,6 +60,71 @@ public class UserServiceImpl implements UserService {
         return returnValue;
     }
 
+    @Override
+    public UserDto getUserByUserID(String userID) {
+        UserDto returnValue = new UserDto();
+        UserEntity userEntity = userRepository.findByUserID(userID);
+
+        if (userEntity == null)
+            throw new UsernameNotFoundException(userID);
+
+        BeanUtils.copyProperties(userEntity, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public UserDto updateUser(String userId,UserDto user) {
+        UserDto returnValue = new UserDto();
+//        UserEntity updateUserDetails;
+        UserEntity userEntity = userRepository.findByUserID(userId);
+
+        if (userEntity == null) {
+            throw new UsernameNotFoundException("temp");
+//            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+
+        userEntity.setFirstname(user.getFirstname());
+        userEntity.setLastname(user.getLastname());
+
+//        try {
+//            if (user.getFirstName() != null) userEntity.setFirstName(user.getFirstName());
+//            if (user.getLastName() != null) userEntity.setLastName(user.getLastName());
+//            if (user.getPassword() != null) {
+//                BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+//                String encryptPassword = bCryptPasswordEncoder.encode(user.getPassword());
+//                userEntity.setEncryptedPassword(encryptPassword);
+//            }
+//
+//            updateUserDetails = userRepository.save(userEntity);
+//        } catch (Exception exception) {
+//            System.out.println(exception.getMessage());
+//            throw new UserServiceException(ErrorMessages.COULD_NOT_UPDATE_RECORD.getErrorMessage());
+//        }
+
+        UserEntity updatedUserDetails = userRepository.save(userEntity);
+
+        BeanUtils.copyProperties(updatedUserDetails, returnValue);
+        return returnValue;
+    }
+
+    @Override
+    public void deleteUser(String id) {
+        UserEntity userEntity = userRepository.findByUserID(id);
+
+        if (userEntity == null) {
+            throw new UsernameNotFoundException("temp");
+//            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+        try {
+            userRepository.delete(userEntity);
+        }
+        catch (Exception exception) {
+            System.out.println(exception.getMessage());
+//            throw new UserServiceException(ErrorMessages.COUNT_NOT_DELETE_RECORD.getErrorMessage());
+            throw new UsernameNotFoundException("temp");
+        }
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
