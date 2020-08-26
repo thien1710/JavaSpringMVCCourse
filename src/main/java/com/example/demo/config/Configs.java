@@ -7,5 +7,13 @@ public class Configs {
             String SIGN_UP = "/users";
         }
     }
+
+    public interface PAGING {
+        interface USER {
+            String LIMIT = "25";
+            String PAGE = "0";
+        }
+    }
+
     public static final int USER_ID_LENGTH = 30;
 }
