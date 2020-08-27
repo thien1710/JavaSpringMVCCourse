@@ -96,4 +96,19 @@ public class UserController {
 
         return returnValue;
     }
+
+    @GetMapping(path = "/test/{fn}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public List<UserRest> getUserByFirstname(@PathVariable String fn) {
+        List<UserRest> returnValue = new ArrayList<>();
+
+        List<UserDto> users = userService.getUsersByFirstname(fn);
+        for (UserDto userDto : users) {
+            UserRest userModel = new UserRest();
+            BeanUtils.copyProperties(userDto, userModel);
+            returnValue.add(userModel);
+        }
+
+        return returnValue;
+    }
 }
