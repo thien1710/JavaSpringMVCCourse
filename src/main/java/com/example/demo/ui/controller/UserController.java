@@ -1,9 +1,11 @@
 package com.example.demo.ui.controller;
 
 import com.example.demo.config.Configs;
+import com.example.demo.exceptions.UserServiceException;
 import com.example.demo.service.UserService;
 import com.example.demo.shared.dto.UserDto;
 import com.example.demo.ui.model.request.UserDetailsRequestModel;
+import com.example.demo.ui.model.response.ErrorMessages;
 import com.example.demo.ui.model.response.OperationStatusModel;
 import com.example.demo.ui.model.response.RequestOperationStatus;
 import com.example.demo.ui.model.response.UserRest;
@@ -38,8 +40,11 @@ public class UserController {
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
     )
-    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) {
+    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception {
         UserRest returnValue = new UserRest();
+
+//        if (userDetails.getFirstname().isEmpty()) throw new Exception(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+        if (userDetails.getFirstname().isEmpty()) throw new NullPointerException("The object is null");
 
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userDetails, userDto);
