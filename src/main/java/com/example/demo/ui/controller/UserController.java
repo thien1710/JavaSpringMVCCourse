@@ -97,12 +97,12 @@ public class UserController {
         return returnValue;
     }
 
-    @GetMapping(path = "/test/{fn}",
+    @GetMapping(path = "/search",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public List<UserRest> getUserByFirstname(@PathVariable String fn) {
+    public List<UserRest> getUserByFirstname( @RequestParam(value = "keyword") String keyword) {
         List<UserRest> returnValue = new ArrayList<>();
 
-        List<UserDto> users = userService.getUsersByFirstname(fn);
+        List<UserDto> users = userService.getUsersFilter(keyword);
         for (UserDto userDto : users) {
             UserRest userModel = new UserRest();
             BeanUtils.copyProperties(userDto, userModel);

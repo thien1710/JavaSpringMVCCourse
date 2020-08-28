@@ -14,14 +14,9 @@ public interface UserRepository extends PagingAndSortingRepository<UserEntity, L
     UserEntity findByEmail(String email);
     UserEntity findByUserID(String userID);
 
-//    c1
-//    List<UserEntity> findAll(String fn);
-
-//    c2
-//    @Query("SELECT u FROM users u WHERE u.firstname = :def")
-//    List<UserEntity> findAll(@Param("def") String def);
-
-//    c3
-    @Query("SELECT u FROM users u WHERE u.firstname = ?1")
-    List<UserEntity> findAll(String def);
+    @Query("SELECT u FROM users u WHERE "
+            + "CONCAT(u.id, u.email, u.firstname, u.lastname)"
+            + " LIKE %?1%"
+    )
+    List<UserEntity> findAllOnUsers(String def);
 }

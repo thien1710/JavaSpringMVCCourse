@@ -146,9 +146,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getUsersByFirstname(String fn) {
+    public List<UserDto> getUsersFilter(String fn) {
         List<UserDto> returnValue = new ArrayList<>();
-        List<UserEntity> users = userRepository.findAll(fn);
+        List<UserEntity> users = userRepository.findAllOnUsers(fn);
 
         for (UserEntity userEntity : users) {
             UserDto userDto = new UserDto();

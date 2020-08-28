@@ -3,8 +3,8 @@ package com.example.demo.config;
 public class Configs {
     public interface URL {
         interface USER {
-            String SIGN_IN = "/users/login";
-            String SIGN_UP = "/users";
+            String SIGN_IN = "/rest/v1/entities/users/login";
+            String SIGN_UP = "/rest/v1/entities/users";
         }
     }
 
