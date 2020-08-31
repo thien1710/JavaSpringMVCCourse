@@ -1,9 +1,21 @@
 package com.example.demo.ui.model.request;
 
+import com.example.demo.ui.model.response.ValidationMessages;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class UserDetailsRequestModel {
     private String firstname;
     private String lastname;
+
+    @NotNull
+    @Email
     private String email;
+
+    @NotNull
+    @Size(min = 6, message = ValidationMessages.PASSWORD_AT_LEAST_6_CHARACTERS)
     private String password;
 
     public String getFirstname() {
