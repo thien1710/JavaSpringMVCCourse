@@ -5,7 +5,6 @@ import com.example.demo.service.UserService;
 import com.example.demo.shared.dto.UserDto;
 import com.example.demo.ui.model.request.UserLoginRequestModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.security.authentication.AuthenticationManager;

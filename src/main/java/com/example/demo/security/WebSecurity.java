@@ -1,6 +1,7 @@
 package com.example.demo.security;
 
 import com.example.demo.config.Configs;
+
 import com.example.demo.service.UserService;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
