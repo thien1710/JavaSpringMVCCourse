@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.model.user.User;
+import com.example.demo.payload.response.ApiResponse;
+import com.example.demo.security.UserPrincipal;
 import com.example.demo.shared.dto.UserDto;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -18,9 +20,11 @@ public interface UserService extends UserDetailsService {
 
     UserDto getUser(String email);
 
-//    User updateUser(User newUser, String username, UserPrincipal currentUser);
-//
-//    ApiResponse deleteUser(String username, UserPrincipal currentUser);
+    UserDto getUserById(long id);
+
+    User updateUser(User newUser, String username);
+
+    ApiResponse deleteUser(String username);
 //
 //    ApiResponse giveAdmin(String username);
 //

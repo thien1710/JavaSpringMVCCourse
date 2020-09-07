@@ -1,6 +1,7 @@
 package com.example.demo.reponsitory;
 
 import com.example.demo.model.user.User;
+import com.example.demo.shared.dto.UserDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsernameOrEmail(String username, String email);
 
     User findByEmail(String email);
+
+    User findById(long id);
+
 }

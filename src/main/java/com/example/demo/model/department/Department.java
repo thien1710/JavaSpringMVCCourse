@@ -27,7 +27,10 @@ public class Department {
 
     }
 
-    @ManyToMany(mappedBy = "departments")
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name="user_department",
+            joinColumns=@JoinColumn(name="department_id"),
+            inverseJoinColumns=@JoinColumn(name="user_id"))
     private List<User> users;
 
     public Long getId() {

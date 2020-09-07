@@ -4,9 +4,16 @@ import javax.validation.Valid;
 
 import com.example.demo.config.Configs;
 import com.example.demo.model.user.User;
+import com.example.demo.payload.response.ApiResponse;
+import com.example.demo.security.CurrentUser;
+import com.example.demo.security.UserPrincipal;
 import com.example.demo.service.UserService;
+import com.example.demo.shared.dto.UserDto;
+import com.example.demo.ui.model.response.UserRest;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -79,30 +86,36 @@ public class UserController {
 //    }
 
     @PostMapping
-//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
         User newUser = userService.addUser(user);
 
         return new ResponseEntity<User>(newUser, HttpStatus.CREATED);
     }
 
-//    @PutMapping("/{username}")
-//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-//    public ResponseEntity<User> updateUser(@Valid @RequestBody User newUser,
-//                                           @PathVariable(value = "username") String username, @CurrentUser UserPrincipal currentUser) {
-//        User updatedUSer = userService.updateUser(newUser, username, currentUser);
-//
-//        return new ResponseEntity<User>(updatedUSer, HttpStatus.CREATED);
-//    }
-//
-//    @DeleteMapping("/{username}")
-//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-//    public ResponseEntity<ApiResponse> deleteUser(@PathVariable(value = "username") String username,
-//                                                  @CurrentUser UserPrincipal currentUser) {
-//        ApiResponse apiResponse = userService.deleteUser(username, currentUser);
-//
-//        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
-//    }
+    @GetMapping(path = "/{id}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public UserRest getUser(@PathVariable Long id) {
+        UserRest returnValue = new UserRest();
+
+        UserDto userDto = userService.getUserById(id);
+        BeanUtils.copyProperties(userDto, returnValue);
+
+        return returnValue;
+    }
+    @PutMapping("/{username}")
+    public ResponseEntity<User> updateUser(@Valid @RequestBody User newUser,
+                                           @PathVariable(value = "username") String username) {
+        User updatedUSer = userService.updateUser(newUser, username);
+
+        return new ResponseEntity<User>(updatedUSer, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{username}")
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable(value = "username") String username) {
+        ApiResponse apiResponse = userService.deleteUser(username);
+
+        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+    }
 //
 //    @PutMapping("/{username}/giveAdmin")
 //    @PreAuthorize("hasRole('ADMIN')")

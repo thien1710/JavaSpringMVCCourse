@@ -1,8 +1,4 @@
 package com.example.demo.ui.model.request;
-//
-//import javax.validation.constraints.Email;
-//import javax.validation.constraints.NotNull;
-//import javax.validation.constraints.Size;
 
 import com.example.demo.ui.model.response.ValidationMessages;
 

@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BadRequestException;
+import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exceptions.UnauthorizedException;
 import com.example.demo.model.department.Department;
 import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
@@ -13,13 +15,16 @@ import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.reponsitory.DepartmentRepository;
 import com.example.demo.reponsitory.RoleRepository;
 import com.example.demo.reponsitory.UserRepository;
+import com.example.demo.security.AccessDeniedException;
+import com.example.demo.security.UserPrincipal;
 import com.example.demo.service.UserService;
 import com.example.demo.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-//    @Autowired
+    //    @Autowired
 //    private PostRepository postRepository;
 //
     @Autowired
@@ -37,7 +42,7 @@ public class UserServiceImpl implements UserService {
     private DepartmentRepository departmentRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
 //    @Override
 //    public UserSummary getCurrentUser(UserPrincipal currentUser) {
@@ -87,10 +92,10 @@ public class UserServiceImpl implements UserService {
         user.setRoles(roles);
 
         List<Department> departments = new ArrayList<>();
-        departments.add(departmentRepository.findByDepartmentName("Etown").orElseThrow(() -> new AppException("User role not set")));
+        departments.add(departmentRepository.findByDepartmentName("Etown1").orElseThrow(() -> new AppException("User role not set")));
         user.setDepartments(departments);
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         User result = userRepository.save(user);
 
         return result;
@@ -98,57 +103,65 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser(String email) {
-        User userEntity = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email);
 
-        if (userEntity == null) throw new UsernameNotFoundException(email);
+        if (user == null) throw new UsernameNotFoundException(email);
 
         UserDto returnValue = new UserDto();
-        BeanUtils.copyProperties(userEntity, returnValue);
+        BeanUtils.copyProperties(user, returnValue);
         return returnValue;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        return null;
+    public UserDto getUserById(long id) {
+        UserDto returnValue = new UserDto();
+        User user = userRepository.findById(id);
+
+        if (user == null)
+            throw new UsernameNotFoundException("id");
+
+        BeanUtils.copyProperties(user, returnValue);
+        return returnValue;
     }
 
-//    @Override
-//    public User updateUser(User newUser, String username, UserPrincipal currentUser) {
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-//        if (user.getId().equals(currentUser.getId())
-//                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
-//            user.setFirstName(newUser.getFirstName());
-//            user.setLastName(newUser.getLastName());
-//            user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-//            user.setAddress(newUser.getAddress());
-//            user.setPhone(newUser.getPhone());
-//            user.setWebsite(newUser.getWebsite());
-//            user.setCompany(newUser.getCompany());
-//
-//            User updatedUser = userRepository.save(user);
-//            return updatedUser;
-//
-//        }
-//
-//        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "You don't have permission to update profile of: " + username);
-//        throw new UnauthorizedException(apiResponse);
-//
-//    }
-//
-//    @Override
-//    public ApiResponse deleteUser(String username, UserPrincipal currentUser) {
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new ResourceNotFoundException("User", "id", username));
-//        if (!user.getId().equals(currentUser.getId()) || !currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
-//            ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "You don't have permission to delete profile of: " + username);
-//            throw new AccessDeniedException(apiResponse);
-//        }
-//
-//        userRepository.deleteById(user.getId());
-//
-//        return new ApiResponse(Boolean.TRUE, "You successfully deleted profile of: " + username);
-//    }
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if (user == null) throw new UsernameNotFoundException(email);
+
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
+    }
+
+
+    @Override
+    public User updateUser(User newUser, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+
+        user.setFirstName(newUser.getFirstName());
+        user.setLastName(newUser.getLastName());
+        user.setUsername(newUser.getUsername());
+
+        user.setPassword(bCryptPasswordEncoder.encode(newUser.getPassword()));
+
+        user.setAddress(newUser.getAddress());
+        user.setPhone(newUser.getPhone());
+        user.setWebsite(newUser.getWebsite());
+        user.setSalaryNum(newUser.getSalaryNum());
+
+        User updatedUser = userRepository.save(user);
+        return updatedUser;
+
+    }
+
+    @Override
+    public ApiResponse deleteUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", username));
+
+        userRepository.deleteById(user.getId());
+        return new ApiResponse(Boolean.TRUE, "You successfully deleted profile of: " + username);
+    }
 //
 //    @Override
 //    public ApiResponse giveAdmin(String username) {
@@ -204,4 +217,6 @@ public class UserServiceImpl implements UserService {
 //        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "You don't have permission to update users profile", HttpStatus.FORBIDDEN);
 //        throw new AccessDeniedException(apiResponse);
 //    }
+
+
 }
