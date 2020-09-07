@@ -1,0 +1,55 @@
+package com.example.demo.model.department;
+
+import com.example.demo.model.role.RoleName;
+import org.hibernate.annotations.NaturalId;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "departments")
+public class Department {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "department_name")
+    private String departmentName;
+
+    @Column(name = "qty")
+    private String qty;
+
+    @Column(name = "note")
+    private String note;
+
+    public Department(){
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
+    public String getQty() {
+        return qty;
+    }
+
+    public void setQty(String qty) {
+        this.qty = qty;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+}
