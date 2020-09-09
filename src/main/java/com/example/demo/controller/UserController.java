@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import javax.validation.Valid;
 
 import com.example.demo.config.Configs;
+import com.example.demo.model.user.CurrentUser;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.service.UserService;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -108,6 +110,17 @@ public class UserController {
         ApiResponse apiResponse = userService.deleteUser(username);
 
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/account")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public String viewUserAccountForm(@AuthenticationPrincipal CurrentUser currentUser) {
+        String userName = currentUser.getUsername();
+        String firstName = currentUser.getFirstName();
+
+        String result = String.format("User name = %s%nFirst name = %s", userName, firstName);
+
+        return result;
     }
 //
 //    @PutMapping("/{username}/giveAdmin")

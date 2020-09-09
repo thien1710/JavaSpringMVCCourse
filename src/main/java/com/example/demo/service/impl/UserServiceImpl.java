@@ -10,6 +10,7 @@ import com.example.demo.exceptions.BadRequestException;
 import com.example.demo.model.department.Department;
 import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
+import com.example.demo.model.user.CurrentUser;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.reponsitory.DepartmentRepository;
@@ -48,7 +49,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         if(user == null){
             throw new UsernameNotFoundException("Invalid username or password.");
         }
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthority(user));
+//        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthority(user));
+        return new CurrentUser(user);
     }
 
     private Set<SimpleGrantedAuthority> getAuthority(User user) {
