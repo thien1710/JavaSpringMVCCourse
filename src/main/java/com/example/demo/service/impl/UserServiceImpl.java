@@ -1,12 +1,12 @@
 package com.example.demo.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BadRequestException;
-import com.example.demo.exceptions.ResourceNotFoundException;
-import com.example.demo.exceptions.UnauthorizedException;
 import com.example.demo.model.department.Department;
 import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
@@ -15,20 +15,19 @@ import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.reponsitory.DepartmentRepository;
 import com.example.demo.reponsitory.RoleRepository;
 import com.example.demo.reponsitory.UserRepository;
-import com.example.demo.security.AccessDeniedException;
-import com.example.demo.security.UserPrincipal;
 import com.example.demo.service.UserService;
 import com.example.demo.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-@Service
-public class UserServiceImpl implements UserService {
+@Service(value = "userService")
+public class UserServiceImpl implements UserDetailsService, UserService {
     @Autowired
     private UserRepository userRepository;
 
@@ -43,6 +42,24 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        if(user == null){
+            throw new UsernameNotFoundException("Invalid username or password.");
+        }
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthority(user));
+    }
+
+    private Set<SimpleGrantedAuthority> getAuthority(User user) {
+        Set<SimpleGrantedAuthority> authorities = new HashSet<>();
+        user.getRoles().forEach(role -> {
+            //authorities.add(new SimpleGrantedAuthority(role.getName()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        });
+        return authorities;
+        //return Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+    }
 
 //    @Override
 //    public UserSummary getCurrentUser(UserPrincipal currentUser) {
@@ -86,9 +103,10 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException(apiResponse);
         }
 
-        List<Role> roles = new ArrayList<>();
+        Set<Role> roles = new HashSet<>();
+//        List<Role> roles = new ArrayList<>();
         roles.add(
-                roleRepository.findByName(RoleName.ROLE_ADMIN).orElseThrow(() -> new AppException("User role not set")));
+                roleRepository.findByName(RoleName.ADMIN).orElseThrow(() -> new AppException("User role not set")));
         user.setRoles(roles);
 
         List<Department> departments = new ArrayList<>();
@@ -125,19 +143,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user == null) throw new UsernameNotFoundException(email);
-
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
-    }
-
-
-    @Override
     public User updateUser(User newUser, String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-
+//                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username))
+        ;
+        if (user == null) throw new UsernameNotFoundException(username);
         user.setFirstName(newUser.getFirstName());
         user.setLastName(newUser.getLastName());
         user.setUsername(newUser.getUsername());
@@ -157,8 +167,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public ApiResponse deleteUser(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", username));
-
+//                .orElseThrow(() -> new ResourceNotFoundException("User", "id", username))
+                ;
+        if (user == null) throw new UsernameNotFoundException(username);
         userRepository.deleteById(user.getId());
         return new ApiResponse(Boolean.TRUE, "You successfully deleted profile of: " + username);
     }

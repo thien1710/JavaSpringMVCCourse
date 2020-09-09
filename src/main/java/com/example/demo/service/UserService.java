@@ -2,11 +2,12 @@ package com.example.demo.service;
 
 import com.example.demo.model.user.User;
 import com.example.demo.payload.response.ApiResponse;
-import com.example.demo.security.UserPrincipal;
 import com.example.demo.shared.dto.UserDto;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService extends UserDetailsService {
+import java.util.List;
+
+public interface UserService {
 
 //    UserSummary getCurrentUser(UserPrincipal currentUser);
 //

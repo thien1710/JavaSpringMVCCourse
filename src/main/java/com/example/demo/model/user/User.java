@@ -3,6 +3,7 @@ package com.example.demo.model.user;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -85,7 +86,7 @@ public class User extends DateAudit {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles;
+    private Set<Role> roles;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -190,18 +191,33 @@ public class User extends DateAudit {
         this.password = password;
     }
 
-    public List<Role> getRoles() {
 
-        return roles == null ? null : new ArrayList<>(roles);
+
+
+
+
+
+//    public List<Role> getRoles() {
+//
+//        return roles == null ? null : new ArrayList<>(roles);
+//    }
+//
+//    public void setRoles(List<Role> roles) {
+//
+////		if (roles == null) {
+////			this.roles = null;
+////		} else {
+////			this.roles = Collections.unmodifiableList(roles);
+////		}
+//        this.roles = roles;
+//    }
+
+
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRoles(List<Role> roles) {
-
-//		if (roles == null) {
-//			this.roles = null;
-//		} else {
-//			this.roles = Collections.unmodifiableList(roles);
-//		}
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 

@@ -5,8 +5,6 @@ import javax.validation.Valid;
 import com.example.demo.config.Configs;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.response.ApiResponse;
-import com.example.demo.security.CurrentUser;
-import com.example.demo.security.UserPrincipal;
 import com.example.demo.service.UserService;
 import com.example.demo.shared.dto.UserDto;
 import com.example.demo.ui.model.response.UserRest;
@@ -16,16 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(Configs.URL.USER.SIGN_UP)
 public class UserController {
@@ -94,6 +85,7 @@ public class UserController {
 
     @GetMapping(path = "/{id}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @PreAuthorize("hasRole('USER')")
     public UserRest getUser(@PathVariable Long id) {
         UserRest returnValue = new UserRest();
 
@@ -103,6 +95,7 @@ public class UserController {
         return returnValue;
     }
     @PutMapping("/{username}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<User> updateUser(@Valid @RequestBody User newUser,
                                            @PathVariable(value = "username") String username) {
         User updatedUSer = userService.updateUser(newUser, username);
