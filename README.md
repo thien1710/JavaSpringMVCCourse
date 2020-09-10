@@ -1,6 +1,38 @@
 # Esm Project
 
-Build Restful CRUD API for a blog using Spring Boot, Mysql, JPA and Hibernate.
+# Spring Boot, MySQL, Spring Security, JWT, JPA, Rest API
+
+Build Restful CRUD API for a ESM System using Spring Boot, Mysql, JPA and Hibernate.
+
+## Steps to Setup
+
+**1. Clone the application**
+
+```bash
+git clone https://github.com/thien1710/JavaSpringMVCCourse.git
+```
+
+**2. Create Mysql database**
+```bash
+create database test
+```
+- run `src/main/resources/esm.sql`
+
+**3. Change mysql username and password as per your installation**
+
++ open `src/main/resources/application.properties`
++ change `spring.datasource.username` and `spring.datasource.password` as per your mysql installation
+
+**4. Run the app using maven**
+
+```bash
+
+```
+The app will start running at <http://localhost:8080>
+
+## Explore Rest APIs
+
+The app defines following CRUD APIs.
 
 ### Users
 
