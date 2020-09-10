@@ -10,56 +10,57 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class CurrentUser implements UserDetails {
+public class CurrentUser {
+//public class CurrentUser implements UserDetails {
 
-    private User user;
+//    private User user;
+//
+//    public CurrentUser(User user) {
+//        this.user = user;
+//    }
 
-    public CurrentUser(User user) {
-        this.user = user;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<Role> roles = user.getRoles();
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName().name()));
-        }
-        return authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return user.getPassword();
-    }
-
-    @Override
-    public String getUsername() {
-        return user.getUsername();
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return false;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return false;
-    }
-
-    public String getFirstName() {
-        return this.user.getFirstName();
-    }
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        Set<Role> roles = user.getRoles();
+//        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+//
+//        for (Role role : roles) {
+//            authorities.add(new SimpleGrantedAuthority(role.getName().name()));
+//        }
+//        return authorities;
+//    }
+//
+//    @Override
+//    public String getPassword() {
+//        return user.getPassword();
+//    }
+//
+//    @Override
+//    public String getUsername() {
+//        return user.getUsername();
+//    }
+//
+//    @Override
+//    public boolean isAccountNonExpired() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isAccountNonLocked() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isCredentialsNonExpired() {
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isEnabled() {
+//        return true;
+//    }
+//
+//    public String getFirstName() {
+//        return this.user.getFirstName();
+//    }
 }

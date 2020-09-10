@@ -46,11 +46,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
-        if(user == null){
+        if (user == null) {
             throw new UsernameNotFoundException("Invalid username or password.");
         }
-//        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthority(user));
-        return new CurrentUser(user);
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthority(user));
+//        return new CurrentUser(user);
     }
 
     private Set<SimpleGrantedAuthority> getAuthority(User user) {
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
         });
         return authorities;
-        //return Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        //return Arrays.asList(new SimpleGranauthoritiestedAuthority("ROLE_ADMIN"));
     }
 
 //    @Override
@@ -94,6 +94,15 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 //    }
 
     @Override
+    public User getCurrentUser(String username) {
+        User user = userRepository.findByUsername(username);
+//                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+        if (user == null) throw new UsernameNotFoundException(username);
+
+        return user;
+    }
+
+    @Override
     public User addUser(User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
             ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "Username is already taken");
@@ -106,14 +115,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         }
 
         Set<Role> roles = new HashSet<>();
-//        List<Role> roles = new ArrayList<>();
         roles.add(
-                roleRepository.findByName(RoleName.ADMIN).orElseThrow(() -> new AppException("User role not set")));
+                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new AppException("User role not set")));
         user.setRoles(roles);
-
-        List<Department> departments = new ArrayList<>();
-        departments.add(departmentRepository.findByDepartmentName("Etown1").orElseThrow(() -> new AppException("User role not set")));
-        user.setDepartments(departments);
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         User result = userRepository.save(user);
@@ -148,8 +152,8 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public User updateUser(User newUser, String username) {
         User user = userRepository.findByUsername(username)
 //                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username))
-        ;
-        if (user == null) throw new UsernameNotFoundException(username);
+                ;
+        if (user == null) throw new UsernameNotFoundException(username + " not found");
         user.setFirstName(newUser.getFirstName());
         user.setLastName(newUser.getLastName());
         user.setUsername(newUser.getUsername());
@@ -175,32 +179,33 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         userRepository.deleteById(user.getId());
         return new ApiResponse(Boolean.TRUE, "You successfully deleted profile of: " + username);
     }
-//
-//    @Override
-//    public ApiResponse giveAdmin(String username) {
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-//        List<Role> roles = new ArrayList<>();
-//        roles.add(roleRepository.findByName(RoleName.ROLE_ADMIN)
-//                .orElseThrow(() -> new AppException("User role not set")));
-//        roles.add(
-//                roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(() -> new AppException("User role not set")));
-//        user.setRoles(roles);
-//        userRepository.save(user);
-//        return new ApiResponse(Boolean.TRUE, "You gave ADMIN role to user: " + username);
-//    }
-//
-//    @Override
-//    public ApiResponse removeAdmin(String username) {
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-//        List<Role> roles = new ArrayList<>();
-//        roles.add(
-//                roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(() -> new AppException("User role not set")));
-//        user.setRoles(roles);
-//        userRepository.save(user);
-//        return new ApiResponse(Boolean.TRUE, "You took ADMIN role from user: " + username);
-//    }
+
+    @Override
+    public ApiResponse giveAdmin(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) throw new UsernameNotFoundException(username + " not found");
+
+        Set<Role> roles = new HashSet<>();
+        roles.add(roleRepository.findByName(RoleName.ADMIN)
+                .orElseThrow(() -> new AppException("User role not set")));
+        roles.add(
+                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new AppException("User role not set")));
+        user.setRoles(roles);
+        userRepository.save(user);
+        return new ApiResponse(Boolean.TRUE, "You gave ADMIN role to user: " + username);
+    }
+
+    @Override
+    public ApiResponse removeAdmin(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) throw new UsernameNotFoundException(username + " not found");
+        Set<Role> roles = new HashSet<>();
+        roles.add(
+                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new AppException("User role not set")));
+        user.setRoles(roles);
+        userRepository.save(user);
+        return new ApiResponse(Boolean.TRUE, "You took ADMIN role from user: " + username);
+    }
 //
 //    @Override
 //    public UserProfile setOrUpdateInfo(UserPrincipal currentUser, InfoRequest infoRequest) {

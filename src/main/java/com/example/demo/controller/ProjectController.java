@@ -15,7 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(Configs.URL.PROJECT.PROJECT)
+@RequestMapping(Configs.URL.PROJECT.PROJECTS)
 public class ProjectController {
     @Autowired
     private ProjectService projectService;

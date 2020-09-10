@@ -17,6 +17,8 @@ public interface UserService {
 //
 //    UserProfile getUserProfile(String username);
 
+    User getCurrentUser(String username);
+
     User addUser(User user);
 
     UserDto getUser(String email);
@@ -26,10 +28,10 @@ public interface UserService {
     User updateUser(User newUser, String username);
 
     ApiResponse deleteUser(String username);
-//
-//    ApiResponse giveAdmin(String username);
-//
-//    ApiResponse removeAdmin(String username);
+
+    ApiResponse giveAdmin(String username);
+
+    ApiResponse removeAdmin(String username);
 //
 //    UserProfile setOrUpdateInfo(UserPrincipal currentUser, InfoRequest infoRequest);
 

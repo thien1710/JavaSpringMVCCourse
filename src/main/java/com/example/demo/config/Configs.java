@@ -4,13 +4,16 @@ public class Configs {
     public interface URL {
         interface USER {
             String SIGN_IN = "/rest/v1/entities/users/login";
-            String SIGN_UP = "/rest/v1/entities/users";
+            String USERS = "/rest/v1/entities/users";
         }
         interface PROJECT {
-            String PROJECT = "/rest/v1/entities/customers/{customerId}/projects";
+            String PROJECTS = "/rest/v1/entities/customers/{customerId}/projects";
         }
         interface CUSTOMER {
-            String CUSTOMER = "/rest/v1/entities/customers";
+            String CUSTOMERS = "/rest/v1/entities/customers";
+        }
+        interface AUTH {
+            String AUTHS = "/rest/v1/entities/auth";
         }
     }
 
