@@ -38,7 +38,7 @@ The app defines following CRUD APIs.
 
 | Method | Url | Description | Sample Valid Request Body |
 | ------ | --- | ----------- | ------------------------- |
-| POST   | /rest/v1/entities/auth/signup | Add user without role based (ADMIN or USER) | [JSON](#addUserWithoutRoleBased) |
+| POST   | /rest/v1/entities/auth/signup | Add user without role based | [JSON](#addUserWithoutRoleBased) |
 | POST   | /rest/v1/entities/auth/signin | Login to created account (ADMIN or USER) | [JSON](#userLogin) |
 | POST   | /rest/v1/entities/users | Add user with role based (ADMIN) | [JSON](#addUserWithRoleBased) |
 | GET    | /rest/v1/entities/users/{id} | Get user by id (ADMIN or USER) | [JSON](#getUserById) |
@@ -52,7 +52,7 @@ Test them using postman or any other rest client.
 
 ## Sample Valid JSON Request Bodys
 
-##### <a id="(addUserWithoutRoleBased) ">Add user without role based (ADMIN or USER) -> /rest/v1/entities/auth/signup</a>
+##### <a id="(addUserWithoutRoleBased) ">Add user without role based -> /rest/v1/entities/auth/signup</a>
 ```json
 {
 	"firstName": "Leanne",
