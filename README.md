@@ -6,9 +6,9 @@ Build Restful CRUD API for a blog using Spring Boot, Mysql, JPA and Hibernate.
 
 | Method | Url | Description | Sample Valid Request Body |
 | ------ | --- | ----------- | ------------------------- |
-| POST   | /rest/v1/entities/users | Add user with role based (ADMIN) | [JSON](#addUserWithRoleBased) |
 | POST   | /rest/v1/entities/auth/signup | Add user without role based (ADMIN or USER) | [JSON](#addUserWithoutRoleBased) |
 | POST   | /rest/v1/entities/auth/signin | Login to created account (ADMIN or USER) | [JSON](#userLogin) |
+| POST   | /rest/v1/entities/users | Add user with role based (ADMIN) | [JSON](#addUserWithRoleBased) |
 | GET    | /rest/v1/entities/users/{id} | Get user by id (ADMIN or USER) | [JSON](#getUserById) |
 | GET    | /rest/v1/entities/users/me | Get current user (USER) | [JSON](#getCurrentUser) |
 | PUT    | /rest/v1/entities/users/{username} | Update user (ADMIN or USER) | [JSON](#updateUser) |
