@@ -6,13 +6,15 @@ Build Restful CRUD API for a blog using Spring Boot, Mysql, JPA and Hibernate.
 
 | Method | Url | Description | Sample Valid Request Body |
 | ------ | --- | ----------- | ------------------------- |
-| POST   | /rest/v1/entities/users | Add user | [JSON](#usercreate) |
-| POST   | /rest/v1/entities/users/login | Login to created account | [JSON](#userlogin) |
-| GET    | /rest/v1/entities/users/{userID} | Get user profile by userID (For logged in user)| |
-| PUT    | /rest/v1/entities/users/{userID} | Update user (For logged in user) | [JSON](#updateuser) |
-| DELETE | /rest/v1/entities/users/{userID} | Delete user (For logged in user) | |
-| GET    | rest/v1/entities/users/search?param | Filter user profile by it's each field | [PARAMS](#filteruser) |
-| GET    | /rest/v1/entities/users/?param | Paging for user | [PARAMS](#paginguser) |
+| POST   | /rest/v1/entities/users | Add user with authorization (ADMIN) | [JSON](#usercreate) |
+| POST   | /rest/v1/entities/auth/signup | Add user without authorization (ADMIN or USER) | [JSON](#usercreate) |
+| POST   | /rest/v1/entities/auth/signin | Login to created account (ADMIN or USER) | [JSON](#userlogin) |
+| GET    | /rest/v1/entities/users/{id} | Get user by id (ADMIN or USER) | |
+| GET    | /rest/v1/entities/users/me | Get current user (USER) | |
+| PUT    | /rest/v1/entities/users/{username} | Update user (ADMIN or USER) | [JSON](#updateuser) |
+| PUT    | /rest/v1/entities/users/{username}/giveAdmin | Give admin role (ADMIN) | [JSON](#updateuser) |
+| PUT    | /rest/v1/entities/users/{username}/takeAdmin | Take admin role (ADMIN) | [JSON](#updateuser) |
+| DELETE | /rest/v1/entities/users/{username} | Delete user (ADMIN or USER) | |
 
 Test them using postman or any other rest client.
 
