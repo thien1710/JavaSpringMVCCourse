@@ -1,22 +1,27 @@
 package com.example.demo.payload.request;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 public class UserLoginRequestModel {
-    private String username;
-    private String password;
 
-    public String getUsername() {
-        return username;
+    private String object;
+    private SubUserLoginRequestModel item;
+
+    public String getObject() {
+        return object;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setObject(String object) {
+        this.object = object;
     }
 
-    public String getPassword() {
-        return password;
+    public SubUserLoginRequestModel getItem() {
+        return item;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setItem(SubUserLoginRequestModel item) {
+        this.item = item;
     }
+
 }

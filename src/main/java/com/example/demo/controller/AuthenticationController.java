@@ -58,17 +58,21 @@ public class AuthenticationController {
 
     //    @RequestMapping(value = "/generate-token", method = RequestMethod.POST)
     @PostMapping("/signin")
-    public ResponseEntity<?> register(@RequestBody UserLoginRequestModel loginUser) throws AuthenticationException {
+    public ResponseEntity<?> register(@Valid @RequestBody UserLoginRequestModel loginUser) throws AuthenticationException {
 
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginUser.getUsername(),
-                        loginUser.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = jwtTokenUtil.generateToken(authentication);
-        return ResponseEntity.ok(new AuthToken(token));
+        try {
+            final Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginUser.getItem().getUsername(),
+                            loginUser.getItem().getPassword()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            final String token = jwtTokenUtil.generateToken(authentication);
+            return ResponseEntity.ok(new AuthToken(token));
+        } catch (Exception e) {
+            throw new BlogapiException(HttpStatus.BAD_REQUEST, "Username or Password is incorrect");
+        }
     }
 
     @PostMapping("/signup")

@@ -25,4 +25,10 @@ public class Configs {
     }
 
     public static final int USER_ID_LENGTH = 30;
+
+    public class AppConstant {
+        public static final String CUSTOMER = "Customer";
+        public static final String PROJECT = "Customer";
+        public static final String ID = "id";
+    }
 }

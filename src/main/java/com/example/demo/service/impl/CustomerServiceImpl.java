@@ -1,12 +1,12 @@
 package com.example.demo.service.impl;
 
-import static com.example.demo.config.AppConstants.POST;
-import static com.example.demo.config.AppConstants.ID;
-
-
+import com.example.demo.config.Configs;
+import com.example.demo.config.ErrorMessages;
+import com.example.demo.exceptions.BlogapiException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exceptions.UnauthorizedException;
 import com.example.demo.model.customer.Customer;
+import com.example.demo.model.role.RoleName;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.request.CustomerRequest;
 import com.example.demo.payload.response.ApiResponse;
@@ -15,8 +15,14 @@ import com.example.demo.reponsitory.CustomerRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -25,7 +31,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private UserRepository userRepository;
-//
+
+    //
 //    @Autowired
 //    private CategoryRepository categoryRepository;
 //
@@ -92,41 +99,9 @@ public class CustomerServiceImpl implements CustomerService {
 //    }
 //
     @Override
-    public Customer updateCustomer(Long id, CustomerRequest customerRequest, String currentUserEmail) {
-        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(POST, ID, id));
-
-        if (customer.getUser().getEmail().equals(currentUserEmail)) {
-            customer.setCutomerName(customerRequest.getCustomerName());
-            Customer updatedCustomer = customerRepository.save(customer);
-            return updatedCustomer;
-        }
-
-        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "You don't have permission to edit this post");
-
-        throw new UnauthorizedException(apiResponse);
-    }
-
-    @Override
-    public ApiResponse deleteCustomer(Long id, String currentUserEmail) {
-//        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(POST, ID, id));
-//        if (post.getUser().getId().equals(currentUser.getId())
-//                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
-//            postRepository.deleteById(id);
-//            return new ApiResponse(Boolean.TRUE, "You successfully deleted post");
-//        }
-//
-//        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "You don't have permission to delete this post");
-//
-//        throw new UnauthorizedException(apiResponse);
-        return null;
-    }
-//
-    @Override
-    public CustomerResponse addCustomer(CustomerRequest customerRequest, String currentUserEmail) {
-        User user = userRepository.findByEmail(currentUserEmail);
-        if (user == null) throw new UsernameNotFoundException(currentUserEmail);
-//        User user = userRepository.findById(currentUser.getId())
-//                .orElseThrow(() -> new ResourceNotFoundException(USER, ID, 1L));
+    public CustomerResponse addCustomer(CustomerRequest customerRequest, String currentUserUsername) {
+        User user = userRepository.findByUsername(currentUserUsername);
+        if (user == null) throw new UsernameNotFoundException(currentUserUsername + " not found");
 
         Customer customer = new Customer();
         customer.setCutomerName(customerRequest.getCustomerName());
@@ -139,6 +114,39 @@ public class CustomerServiceImpl implements CustomerService {
         customerResponse.setCustomerName(newCustomer.getCutomerName());
 
         return customerResponse;
+    }
+
+    @Override
+    public Customer updateCustomer(Long id, CustomerRequest customerRequest, Authentication authentication) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new BlogapiException(HttpStatus.NOT_FOUND,
+                        String.format("%s not found with %s: '%s'", Configs.AppConstant.CUSTOMER, Configs.AppConstant.ID, id)));
+
+        if (customer.getUser().getUsername().equals(authentication.getName())
+                || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))
+        ) {
+            customer.setCutomerName(customerRequest.getCustomerName());
+            Customer updatedCustomer = customerRepository.save(customer);
+            return updatedCustomer;
+        }
+
+        throw new BlogapiException(HttpStatus.UNAUTHORIZED,
+                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + " update" + ErrorMessages.THIS_PROJECT.getErrorMessage());
+    }
+
+    @Override
+    public ApiResponse deleteCustomer(Long id, Authentication authentication) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new BlogapiException(HttpStatus.NOT_FOUND,
+                        String.format("%s not found with %s: '%s'", Configs.AppConstant.CUSTOMER, Configs.AppConstant.ID, id)));
+        if (customer.getUser().getUsername().equals(authentication.getName())
+                || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))) {
+            customerRepository.deleteById(id);
+            return new ApiResponse(Boolean.TRUE, "You successfully deleted post");
+        }
+
+        throw new BlogapiException(HttpStatus.UNAUTHORIZED,
+                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + " delete" + ErrorMessages.THIS_PROJECT.getErrorMessage());
     }
 //
 //    @Override

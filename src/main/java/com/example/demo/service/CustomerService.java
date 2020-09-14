@@ -4,6 +4,10 @@ import com.example.demo.model.customer.Customer;
 import com.example.demo.payload.request.CustomerRequest;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.CustomerResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 public interface CustomerService {
 
@@ -15,11 +19,11 @@ public interface CustomerService {
 //
 //    PagedResponse<Post> getPostsByTag(Long id, int page, int size);
 //
-    Customer updateCustomer(Long id, CustomerRequest newPostRequest, String currentUserEmail);
+    Customer updateCustomer(Long id, CustomerRequest newPostRequest, Authentication authentication);
 //
-    ApiResponse deleteCustomer(Long id, String currentUserEmail);
+    ApiResponse deleteCustomer(Long id, Authentication authentication);
 //
-    CustomerResponse addCustomer(CustomerRequest postRequest, String currentUserEmail);
+    CustomerResponse addCustomer(CustomerRequest postRequest, String currentUserUsername);
 //
 //    Post getPost(Long id);
 

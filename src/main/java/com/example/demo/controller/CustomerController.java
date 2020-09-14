@@ -5,19 +5,16 @@ import javax.validation.Valid;
 import com.example.demo.config.Configs;
 import com.example.demo.model.customer.Customer;
 import com.example.demo.payload.request.CustomerRequest;
+import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.CustomerResponse;
 import com.example.demo.security.IAuthenticationFacade;
 import com.example.demo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -60,13 +57,10 @@ public class CustomerController {
 //    }
 //
     @PostMapping
-    public ResponseEntity<CustomerResponse> addPost(@Valid @RequestBody CustomerRequest customerRequest) {
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CustomerResponse> addCustomer(@Valid @RequestBody CustomerRequest customerRequest, Authentication authentication) {
 
-        Authentication authentication = authenticationFacade.getAuthentication();
-
-        String currentUserEmail = authentication.getName();
-
-        CustomerResponse postResponse = customerService.addCustomer(customerRequest, currentUserEmail);
+        CustomerResponse postResponse = customerService.addCustomer(customerRequest, authentication.getName());
 
         return new ResponseEntity<CustomerResponse>(postResponse, HttpStatus.CREATED);
     }
@@ -79,23 +73,24 @@ public class CustomerController {
 //    }
 //
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updatePost(@PathVariable(name = "id") Long id,
-                                               @Valid @RequestBody CustomerRequest customerRequest) {
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable(name = "id") Long id,
+                                               @Valid @RequestBody CustomerRequest customerRequest,
+                                               Authentication authentication) {
 
-        Authentication authentication = authenticationFacade.getAuthentication();
-
-        String currentUserEmail = authentication.getName();
-
-        Customer post = customerService.updateCustomer(id, customerRequest, currentUserEmail);
+        Customer post = customerService.updateCustomer(id, customerRequest, authentication);
 
         return new ResponseEntity<Customer>(post, HttpStatus.OK);
     }
-//
-//    @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-//    public ResponseEntity<ApiResponse> deletePost(@PathVariable(name = "id") Long id, @CurrentUser UserPrincipal currentUser) {
-//        ApiResponse apiResponse = postService.deletePost(id, currentUser);
-//
-//        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
-//    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse> deleteCustomer(@PathVariable(name = "id") Long id, Authentication authentication) {
+        ApiResponse apiResponse = customerService.deleteCustomer(id, authentication);
+
+        HttpStatus status = apiResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+
+        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+    }
+
 }
