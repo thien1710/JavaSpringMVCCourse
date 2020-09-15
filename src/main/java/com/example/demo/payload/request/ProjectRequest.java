@@ -1,20 +1,11 @@
 package com.example.demo.payload.request;
 
-import com.example.demo.model.customer.Customer;
-import com.example.demo.model.user.User;
-
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.time.Instant;
 
 public class ProjectRequest {
 
-    @NotBlank
-    @Size(min = 4, max = 50)
+    @NotBlank(message = "projectName must not be blank")
     private String projectName;
 
     private Instant startTime;

@@ -44,28 +44,29 @@ public class User extends DateAudit {
     @Column(name = "id")
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "FirstName is mandatory")
     @Column(name = "first_name")
     @Size(max = 40)
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "LastName is mandatory")
     @Column(name = "last_name")
     @Size(max = 40)
     private String lastName;
 
-    @NotBlank
+    @NotBlank(message = "Userame is mandatory")
     @Column(name = "username")
     @Size(max = 15)
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "Password is mandatory")
+    @Size(min = 8, message = "Password must be 8 or more characters in length")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(max = 100)
     @Column(name = "password")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "Email is mandatory")
     @NaturalId
     @Size(max = 40)
     @Column(name = "email")

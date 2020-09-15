@@ -4,10 +4,12 @@ import javax.validation.Valid;
 
 import com.example.demo.config.Configs;
 import com.example.demo.model.user.User;
+import com.example.demo.payload.request.UserAddResquest;
 import com.example.demo.payload.response.ApiResponse;
+import com.example.demo.payload.response.UserAddResponse;
+import com.example.demo.payload.response.UserResponse;
 import com.example.demo.service.UserService;
 import com.example.demo.shared.dto.UserDto;
-import com.example.demo.ui.model.response.UserRest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -79,22 +81,20 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> addUser(@Valid @RequestBody User user) {
-        User newUser = userService.addUser(user);
+    public ResponseEntity<ApiResponse> addUser(@Valid @RequestBody UserAddResquest userAddResquest) {
+        ApiResponse newUser = userService.addUser(userAddResquest);
 
-        return new ResponseEntity<User>(newUser, HttpStatus.CREATED);
+        return new ResponseEntity<ApiResponse>(newUser, HttpStatus.CREATED);
     }
 
     @GetMapping(path = "/{id}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public UserRest getUser(@PathVariable Long id) {
-        UserRest returnValue = new UserRest();
+    public User getUser(@PathVariable(value = "id") Long id) {
 
-        UserDto userDto = userService.getUserById(id);
-        BeanUtils.copyProperties(userDto, returnValue);
+        User user = userService.getUserById(id);
 
-        return returnValue;
+        return user;
     }
 
     @PutMapping("/{username}")
@@ -108,8 +108,8 @@ public class UserController {
 
     @DeleteMapping("/{username}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> deleteUser(@PathVariable(value = "username") String username) {
-        ApiResponse apiResponse = userService.deleteUser(username);
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable(value = "username") long id) {
+        ApiResponse apiResponse = userService.deleteUser(id);
 
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
     }
@@ -125,16 +125,16 @@ public class UserController {
 
     @PutMapping("/{username}/giveAdmin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> giveAdmin(@PathVariable(name = "username") String username) {
-        ApiResponse apiResponse = userService.giveAdmin(username);
+    public ResponseEntity<ApiResponse> giveAdmin(@PathVariable(name = "username") Long id) {
+        ApiResponse apiResponse = userService.giveAdmin(id);
 
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
     }
 
     @PutMapping("/{username}/takeAdmin")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> takeAdmin(@PathVariable(name = "username") String username) {
-        ApiResponse apiResponse = userService.removeAdmin(username);
+    public ResponseEntity<ApiResponse> takeAdmin(@PathVariable(name = "username") long id) {
+        ApiResponse apiResponse = userService.removeAdmin(id);
 
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
     }

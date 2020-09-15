@@ -63,8 +63,8 @@ public class AuthenticationController {
         try {
             final Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginUser.getItem().getUsername(),
-                            loginUser.getItem().getPassword()
+                            loginUser.getUsername(),
+                            loginUser.getPassword()
                     )
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);

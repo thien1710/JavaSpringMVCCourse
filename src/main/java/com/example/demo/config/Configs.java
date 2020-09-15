@@ -3,17 +3,17 @@ package com.example.demo.config;
 public class Configs {
     public interface URL {
         interface USER {
-            String SIGN_IN = "/rest/v1/entities/users/login";
-            String USERS = "/rest/v1/entities/users";
+            String SIGN_IN = "/api/v1/users/login";
+            String USERS = "/api/v1/users";
         }
         interface PROJECT {
-            String PROJECTS = "/rest/v1/entities/customers/{customerId}/projects";
+            String PROJECTS = "/api/v1/customers/{customerId}/projects";
         }
         interface CUSTOMER {
-            String CUSTOMERS = "/rest/v1/entities/customers";
+            String CUSTOMERS = "/api/v1/customers";
         }
         interface AUTH {
-            String AUTHS = "/rest/v1/entities/auth";
+            String AUTHS = "/api/v1/auth";
         }
     }
 
@@ -28,7 +28,7 @@ public class Configs {
 
     public class AppConstant {
         public static final String CUSTOMER = "Customer";
-        public static final String PROJECT = "Customer";
+        public static final String PROJECT = "Project";
         public static final String ID = "id";
     }
 }

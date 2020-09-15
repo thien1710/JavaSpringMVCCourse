@@ -30,7 +30,6 @@ public class Project extends UserDateAudit {
 
     @Column(name = "project_name")
     @NotBlank
-    @Size(min = 4, max = 50)
     private String projectName;
 
     @Column(name = "start_time")

@@ -5,23 +5,27 @@ import javax.validation.constraints.Size;
 
 public class UserLoginRequestModel {
 
-    private String object;
-    private SubUserLoginRequestModel item;
+    @NotBlank(message = "Username is mandatory")
+    private String username;
 
-    public String getObject() {
-        return object;
+    @NotBlank(message = "Password is mandatory")
+    @Size(min = 8, message = "Password must be 8 or more characters in length")
+    private String password;
+
+    public String getUsername() {
+        return username;
     }
 
-    public void setObject(String object) {
-        this.object = object;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public SubUserLoginRequestModel getItem() {
-        return item;
+    public String getPassword() {
+        return password;
     }
 
-    public void setItem(SubUserLoginRequestModel item) {
-        this.item = item;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
 }

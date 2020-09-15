@@ -1,11 +1,11 @@
 package com.example.demo.service;
 
 import com.example.demo.model.user.User;
+import com.example.demo.payload.request.UserAddResquest;
 import com.example.demo.payload.response.ApiResponse;
+import com.example.demo.payload.response.UserAddResponse;
+import com.example.demo.payload.response.UserResponse;
 import com.example.demo.shared.dto.UserDto;
-import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.List;
 
 public interface UserService {
 
@@ -19,19 +19,19 @@ public interface UserService {
 
     User getCurrentUser(String username);
 
-    User addUser(User user);
+    ApiResponse addUser(UserAddResquest userAddResquest);
 
-    UserDto getUser(String email);
+    UserResponse getUser(String id);
 
-    UserDto getUserById(long id);
+    User getUserById(long id);
 
     User updateUser(User newUser, String username);
 
-    ApiResponse deleteUser(String username);
+    ApiResponse deleteUser(long id);
 
-    ApiResponse giveAdmin(String username);
+    ApiResponse giveAdmin(long id);
 
-    ApiResponse removeAdmin(String username);
+    ApiResponse removeAdmin(long id);
 //
 //    UserProfile setOrUpdateInfo(UserPrincipal currentUser, InfoRequest infoRequest);
 
