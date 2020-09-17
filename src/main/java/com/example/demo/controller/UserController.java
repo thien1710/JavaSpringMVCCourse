@@ -122,17 +122,13 @@ public class UserController {
         return  returnValue;
     }
 
-    @PutMapping(path = Configs.URL.USER.PASSWORD_FORGOT_REQUEST_URL,
+    @PutMapping(path = Configs.URL.USER.PASSWORD_RESET_REQUEST_URL + "/test",
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
-    public ForgotPasswordResponse requestReset(@RequestParam String token,
-                                               @RequestParam String passwordl) {
-        ForgotPasswordResponse returnValue = new ForgotPasswordResponse();
-
-
-
-        return  returnValue;
+    public String requestReset(@RequestParam String token,
+                                               @RequestParam String password) {
+        return userService.requestPasswordReset(token, password);
     }
 
 

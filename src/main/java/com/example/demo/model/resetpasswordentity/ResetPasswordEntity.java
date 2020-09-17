@@ -1,4 +1,4 @@
-package com.example.demo.model.passwordresettoken;
+package com.example.demo.model.resetpasswordentity;
 
 import com.example.demo.model.user.User;
 
@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity(name = "password_reset_token")
-public class PasswordResetToken implements Serializable {
+public class ResetPasswordEntity implements Serializable {
     private static final long serialVersionUID = -4582546779465965928L;
 
     @Id

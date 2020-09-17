@@ -4,27 +4,24 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import com.example.demo.config.AmazonSES;
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BlogapiException;
 import com.example.demo.model.department.Department;
-import com.example.demo.model.passwordresettoken.PasswordResetToken;
+import com.example.demo.model.resetpasswordentity.ResetPasswordEntity;
 import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
 import com.example.demo.model.user.User;
-import com.example.demo.payload.request.PasswordResetRequestModel;
 import com.example.demo.payload.request.UserAddResquest;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.UserAddResponse;
 import com.example.demo.payload.response.UserResponse;
 import com.example.demo.reponsitory.DepartmentRepository;
-import com.example.demo.reponsitory.PasswordResetTokenRepository;
+import com.example.demo.reponsitory.ResetPasswordRepository;
 import com.example.demo.reponsitory.RoleRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.security.SecurityConstants;
 import com.example.demo.service.UserService;
 import com.example.demo.shared.Utils;
-import com.example.demo.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,8 +31,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.jws.soap.SOAPBinding;
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -52,7 +47,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    PasswordResetTokenRepository passwordResetTokenRepository;
+    ResetPasswordRepository resetPasswordRepository;
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
@@ -175,7 +170,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public ApiResponse deleteUser(long id) {
         User user = userRepository.findById(id);
 //                .orElseThrow(() -> new ResourceNotFoundException("User", "id", username))
-                ;
+        ;
         if (user == null) throw new UsernameNotFoundException("User Id: " + id + " not found");
         userRepository.deleteById(user.getId());
         return new ApiResponse(Boolean.TRUE, "You successfully deleted profile of: " + id);
@@ -219,11 +214,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         String token = new Utils().generatePasswordResetToken(user.getUsername());
 
-        PasswordResetToken passwordResetToken = new PasswordResetToken();
-        passwordResetToken.setToken(token);
-        passwordResetToken.setUserDetails(user);
-        passwordResetToken.setTokenCreationDate(LocalDateTime.now());
-        passwordResetTokenRepository.save(passwordResetToken);
+        ResetPasswordEntity resetPasswordEntity = new ResetPasswordEntity();
+        resetPasswordEntity.setToken(token);
+        resetPasswordEntity.setUserDetails(user);
+        resetPasswordEntity.setTokenCreationDate(LocalDateTime.now());
+        resetPasswordRepository.save(resetPasswordEntity);
 
 //        returnValue = new AmazonSES().sendPasswordResetRequest(
 //                user.getFirstName(),
@@ -236,8 +231,28 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public String requestPasswordReset(String token, String password) {
+        ResetPasswordEntity resetPasswordEntity = resetPasswordRepository.findByToken(token);
+        if (resetPasswordEntity == null) {
+            throw new AppException("Token: " + token + " not found");
+        }
 
-       return "";
+        LocalDateTime localDateTime = resetPasswordEntity.getTokenCreationDate();
+
+        if (isTokenExpired(localDateTime)) {
+            return "Token expired.";
+        }
+
+        User user = resetPasswordEntity.getUserDetails();
+
+        resetPasswordEntity.setToken(null);
+        resetPasswordEntity.setTokenCreationDate(null);
+        resetPasswordRepository.save(resetPasswordEntity);
+
+        User copyUser = userRepository.findByEmail(user.getEmail());
+        copyUser.setPassword(bCryptPasswordEncoder.encode(password));
+        userRepository.save(copyUser);
+
+        return "Your password successfully updated.";
     }
 
     /**
