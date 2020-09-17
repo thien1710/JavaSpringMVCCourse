@@ -5,11 +5,11 @@ import javax.validation.constraints.Size;
 
 public class UserLoginRequestModel {
 
-    @NotBlank(message = "Username is mandatory")
+//    @NotBlank(message = "Username is mandatory")
     private String username;
 
     @NotBlank(message = "Password is mandatory")
-    @Size(min = 8, message = "Password must be 8 or more characters in length")
+//    @Size(min = 8, message = "Password must be 8 or more characters in length")
     private String password;
 
     public String getUsername() {

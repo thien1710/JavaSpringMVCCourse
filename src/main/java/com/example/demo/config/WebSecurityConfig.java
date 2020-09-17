@@ -52,6 +52,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/rest/v1/entities/**").permitAll()
                 .antMatchers(HttpMethod.POST, Configs.URL.AUTH.AUTHS + "/**").permitAll()
+                .antMatchers(HttpMethod.POST, Configs.URL.USER.USERS + Configs.URL.USER.PASSWORD_FORGOT_REQUEST_URL).permitAll()
+                .antMatchers(HttpMethod.POST, Configs.URL.USER.USERS + Configs.URL.USER.PASSWORD_RESET_REQUEST_URL).permitAll()
                 .antMatchers(Configs.URL.USER.USERS).permitAll()
                 .anyRequest().authenticated()
                 .and()

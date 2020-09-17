@@ -3,14 +3,16 @@ package com.example.demo.controller;
 import javax.validation.Valid;
 
 import com.example.demo.config.Configs;
+import com.example.demo.config.Constants;
+import com.example.demo.exceptions.AppException;
 import com.example.demo.model.user.User;
+import com.example.demo.payload.request.PasswordResetRequestModel;
+import com.example.demo.payload.request.RequestOperationName;
+import com.example.demo.payload.request.RequestOperationStatus;
 import com.example.demo.payload.request.UserAddResquest;
 import com.example.demo.payload.response.ApiResponse;
-import com.example.demo.payload.response.UserAddResponse;
-import com.example.demo.payload.response.UserResponse;
+import com.example.demo.payload.response.ForgotPasswordResponse;
 import com.example.demo.service.UserService;
-import com.example.demo.shared.dto.UserDto;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +21,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping(Configs.URL.USER.USERS)
@@ -26,62 +31,18 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-//    @Autowired
-//    private PostService postService;
-//
-//    @Autowired
-//    private AlbumService albumService;
-
-//    @GetMapping("/me")
-//    @PreAuthorize("hasRole('USER')")
-//    public ResponseEntity<UserSummary> getCurrentUser(@CurrentUser UserPrincipal currentUser) {
-//        UserSummary userSummary = userService.getCurrentUser(currentUser);
-//
-//        return new ResponseEntity<UserSummary>(userSummary, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/checkUsernameAvailability")
-//    public ResponseEntity<UserIdentityAvailability> checkUsernameAvailability(@RequestParam(value = "username") String username) {
-//        UserIdentityAvailability userIdentityAvailability = userService.checkUsernameAvailability(username);
-//
-//        return new ResponseEntity<UserIdentityAvailability>(userIdentityAvailability, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/checkEmailAvailability")
-//    public ResponseEntity<UserIdentityAvailability> checkEmailAvailability(@RequestParam(value = "email") String email) {
-//        UserIdentityAvailability userIdentityAvailability =  userService.checkEmailAvailability(email);
-//        return new ResponseEntity<UserIdentityAvailability>(userIdentityAvailability, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/{username}/profile")
-//    public ResponseEntity<UserProfile> getUSerProfile(@PathVariable(value = "username") String username) {
-//        UserProfile userProfile = userService.getUserProfile(username);
-//
-//        return new ResponseEntity<UserProfile>(userProfile, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/{username}/posts")
-//    public ResponseEntity<PagedResponse<Post>> getPostsCreatedBy(@PathVariable(value = "username") String username,
-//                                                                 @RequestParam(value = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
-//                                                                 @RequestParam(value = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
-//        PagedResponse<Post> response = postService.getPostsByCreatedBy(username, page, size);
-//
-//        return new ResponseEntity<PagedResponse<Post>>(response, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/{username}/albums")
-//    public ResponseEntity<PagedResponse<Album>> getUserAlbums(@PathVariable(name = "username") String username,
-//                                                              @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
-//                                                              @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
-//
-//        PagedResponse<Album> response = albumService.getUserAlbums(username, page, size);
-//
-//        return new ResponseEntity<PagedResponse<Album>>(response, HttpStatus.OK);
-//    }
-
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> addUser(@Valid @RequestBody UserAddResquest userAddResquest) {
+        Boolean usernameMatches = Configs.isValidTextRegrex(userAddResquest.getUsername(), Constants.REGREX.USERNAME);
+        if (!usernameMatches) {
+            throw new AppException("Username is wrong");
+        }
+
+        Boolean passwordMatches = Configs.isValidTextRegrex(userAddResquest.getPassword(), Constants.REGREX.PASSWORD);
+        if (!passwordMatches) {
+            throw new AppException("Password is wrong");
+        }
         ApiResponse newUser = userService.addUser(userAddResquest);
 
         return new ResponseEntity<ApiResponse>(newUser, HttpStatus.CREATED);
@@ -138,14 +99,43 @@ public class UserController {
 
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
     }
-//
-//    @PutMapping("/setOrUpdateInfo")
-//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-//    public ResponseEntity<UserProfile> setAddress(@CurrentUser UserPrincipal currentUser,
-//                                                  @Valid @RequestBody InfoRequest infoRequest) {
-//        UserProfile userProfile = userService.setOrUpdateInfo(currentUser, infoRequest);
-//
-//        return new ResponseEntity<UserProfile>(userProfile, HttpStatus.OK);
-//    }
+
+    @PostMapping(path = Configs.URL.USER.PASSWORD_FORGOT_REQUEST_URL,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+    consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ForgotPasswordResponse requestForget(@RequestBody PasswordResetRequestModel passwordResetRequestModel) {
+        ForgotPasswordResponse returnValue = new ForgotPasswordResponse();
+
+        String tokenForgotPassword = userService.requestPasswordForgot(passwordResetRequestModel.getEmail());
+
+        if (tokenForgotPassword != null){
+            returnValue.setDescription(RequestOperationName.REQUEST_PASSWORD_RESET_SUCCESSFUL.name());
+            returnValue.setResponseStatus(RequestOperationStatus.SUCCESS.name());
+            returnValue.setToken(tokenForgotPassword);
+        } else {
+            returnValue.setDescription(RequestOperationName.REQUEST_PASSWORD_RESET_FAIL.name());
+            returnValue.setResponseStatus(RequestOperationStatus.ERROR.name());
+        }
+
+
+        return  returnValue;
+    }
+
+    @PutMapping(path = Configs.URL.USER.PASSWORD_FORGOT_REQUEST_URL,
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    public ForgotPasswordResponse requestReset(@RequestParam String token,
+                                               @RequestParam String passwordl) {
+        ForgotPasswordResponse returnValue = new ForgotPasswordResponse();
+
+
+
+        return  returnValue;
+    }
+
+
+
 
 }

@@ -9,14 +9,6 @@ import com.example.demo.shared.dto.UserDto;
 
 public interface UserService {
 
-//    UserSummary getCurrentUser(UserPrincipal currentUser);
-//
-//    UserIdentityAvailability checkUsernameAvailability(String username);
-//
-//    UserIdentityAvailability checkEmailAvailability(String email);
-//
-//    UserProfile getUserProfile(String username);
-
     User getCurrentUser(String username);
 
     ApiResponse addUser(UserAddResquest userAddResquest);
@@ -32,7 +24,9 @@ public interface UserService {
     ApiResponse giveAdmin(long id);
 
     ApiResponse removeAdmin(long id);
-//
-//    UserProfile setOrUpdateInfo(UserPrincipal currentUser, InfoRequest infoRequest);
+
+    String requestPasswordForgot(String email);
+
+    String requestPasswordReset(String token, String password);
 
 }

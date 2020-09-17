@@ -1,24 +1,29 @@
 package com.example.demo.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
+import com.example.demo.config.AmazonSES;
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BlogapiException;
 import com.example.demo.model.department.Department;
+import com.example.demo.model.passwordresettoken.PasswordResetToken;
 import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
 import com.example.demo.model.user.User;
+import com.example.demo.payload.request.PasswordResetRequestModel;
 import com.example.demo.payload.request.UserAddResquest;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.UserAddResponse;
 import com.example.demo.payload.response.UserResponse;
 import com.example.demo.reponsitory.DepartmentRepository;
+import com.example.demo.reponsitory.PasswordResetTokenRepository;
 import com.example.demo.reponsitory.RoleRepository;
 import com.example.demo.reponsitory.UserRepository;
+import com.example.demo.security.SecurityConstants;
 import com.example.demo.service.UserService;
+import com.example.demo.shared.Utils;
 import com.example.demo.shared.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +34,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import javax.jws.soap.SOAPBinding;
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -44,13 +51,15 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    PasswordResetTokenRepository passwordResetTokenRepository;
+
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("Invalid username or password.");
         }
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthority(user));
-//        return new CurrentUser(user);
     }
 
     private Set<SimpleGrantedAuthority> getAuthority(User user) {
@@ -62,36 +71,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return authorities;
         //return Arrays.asList(new SimpleGranauthoritiestedAuthority("ROLE_ADMIN"));
     }
-
-//    @Override
-//    public UserSummary getCurrentUser(UserPrincipal currentUser) {
-//        return new UserSummary(currentUser.getId(), currentUser.getUsername(), currentUser.getFirstName(),
-//                currentUser.getLastName());
-//    }
-//
-//    @Override
-//    public UserIdentityAvailability checkUsernameAvailability(String username) {
-//        Boolean isAvailable = !userRepository.existsByUsername(username);
-//        return new UserIdentityAvailability(isAvailable);
-//    }
-//
-//    @Override
-//    public UserIdentityAvailability checkEmailAvailability(String email) {
-//        Boolean isAvailable = !userRepository.existsByEmail(email);
-//        return new UserIdentityAvailability(isAvailable);
-//    }
-//
-//    @Override
-//    public UserProfile getUserProfile(String username) {
-//        User user = userRepository.findByUsername(username)
-//                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
-//
-//        Long postCount = postRepository.countByCreatedBy(user.getId());
-//
-//        return new UserProfile(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(),
-//                user.getCreatedAt(), user.getEmail(), user.getAddress(), user.getPhone(), user.getWebsite(),
-//                user.getCompany(), postCount);
-//    }
 
     @Override
     public User getCurrentUser(String username) {
@@ -146,7 +125,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         UserAddResponse userAddResponse = new UserAddResponse();
         BeanUtils.copyProperties(user, userAddResponse);
 
-//        return userAddResponse;
         return new ApiResponse(Boolean.TRUE, "User registered successfully");
     }
 
@@ -229,35 +207,51 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         userRepository.save(user);
         return new ApiResponse(Boolean.TRUE, "You took ADMIN role from user: " + id);
     }
-//
-//    @Override
-//    public UserProfile setOrUpdateInfo(UserPrincipal currentUser, InfoRequest infoRequest) {
-//        User user = userRepository.findByUsername(currentUser.getUsername())
-//                .orElseThrow(() -> new ResourceNotFoundException("User", "username", currentUser.getUsername()));
-//        Geo geo = new Geo(infoRequest.getLat(), infoRequest.getLng());
-//        Address address = new Address(infoRequest.getStreet(), infoRequest.getSuite(), infoRequest.getCity(),
-//                infoRequest.getZipcode(), geo);
-//        Company company = new Company(infoRequest.getCompanyName(), infoRequest.getCatchPhrase(), infoRequest.getBs());
-//        if (user.getId().equals(currentUser.getId())
-//                || currentUser.getAuthorities().contains(new SimpleGrantedAuthority(RoleName.ROLE_ADMIN.toString()))) {
-//            user.setAddress(address);
-//            user.setCompany(company);
-//            user.setWebsite(infoRequest.getWebsite());
-//            user.setPhone(infoRequest.getPhone());
-//            User updatedUser = userRepository.save(user);
-//
-//            Long postCount = postRepository.countByCreatedBy(updatedUser.getId());
-//
-//            UserProfile userProfile = new UserProfile(updatedUser.getId(), updatedUser.getUsername(),
-//                    updatedUser.getFirstName(), updatedUser.getLastName(), updatedUser.getCreatedAt(),
-//                    updatedUser.getEmail(), updatedUser.getAddress(), updatedUser.getPhone(), updatedUser.getWebsite(),
-//                    updatedUser.getCompany(), postCount);
-//            return userProfile;
-//        }
-//
-//        ApiResponse apiResponse = new ApiResponse(Boolean.FALSE, "You don't have permission to update users profile", HttpStatus.FORBIDDEN);
-//        throw new AccessDeniedException(apiResponse);
-//    }
 
+    @Override
+    public String requestPasswordForgot(String email) {
+
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            throw new AppException("Email " + email + " not found");
+        }
+
+        String token = new Utils().generatePasswordResetToken(user.getUsername());
+
+        PasswordResetToken passwordResetToken = new PasswordResetToken();
+        passwordResetToken.setToken(token);
+        passwordResetToken.setUserDetails(user);
+        passwordResetToken.setTokenCreationDate(LocalDateTime.now());
+        passwordResetTokenRepository.save(passwordResetToken);
+
+//        returnValue = new AmazonSES().sendPasswordResetRequest(
+//                user.getFirstName(),
+//                user.getEmail(),
+//                token
+//        );
+
+        return token;
+    }
+
+    @Override
+    public String requestPasswordReset(String token, String password) {
+
+       return "";
+    }
+
+    /**
+     * Check whether the created token expired or not.
+     *
+     * @param tokenCreationDate
+     * @return true or false
+     */
+    private boolean isTokenExpired(final LocalDateTime tokenCreationDate) {
+
+        LocalDateTime now = LocalDateTime.now();
+        Duration diff = Duration.between(tokenCreationDate, now);
+
+        return diff.toMinutes() >= SecurityConstants.PASSWORD_RESET_ACCESS_TOKEN_VALIDITY_SECONDS;
+    }
 
 }

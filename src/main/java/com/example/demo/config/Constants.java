@@ -10,5 +10,9 @@ public interface Constants {
     interface RANDOM {
         String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuwxyz";
     }
+    interface REGREX {
+        String PASSWORD = "^(?=.*[0-9])" + "(?=.*[a-z])(?=.*[A-Z])" + "(?=.*[@#$%^&+=])" + "(?=\\S+$).{8,}$";
+        String USERNAME = "[a-z0-9_-]{1,25}$";
+    }
 
 }

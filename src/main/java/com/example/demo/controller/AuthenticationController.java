@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.config.Configs;
+import com.example.demo.config.Constants;
 import com.example.demo.config.TokenProvider;
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BlogapiException;
@@ -30,6 +31,8 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -59,7 +62,6 @@ public class AuthenticationController {
     //    @RequestMapping(value = "/generate-token", method = RequestMethod.POST)
     @PostMapping("/signin")
     public ResponseEntity<?> register(@Valid @RequestBody UserLoginRequestModel loginUser) throws AuthenticationException {
-
         try {
             final Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -77,6 +79,16 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+        Boolean usernameMatches = Configs.isValidTextRegrex(signUpRequest.getUsername(), Constants.REGREX.USERNAME);
+        if (!usernameMatches) {
+            throw new AppException("Username is wrong");
+        }
+
+        Boolean passwordMatches = Configs.isValidTextRegrex(signUpRequest.getPassword(), Constants.REGREX.PASSWORD);
+        if (!passwordMatches) {
+            throw new AppException("Password is wrong");
+        }
+
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             throw new BlogapiException(HttpStatus.BAD_REQUEST, "Username is already taken");
         }
