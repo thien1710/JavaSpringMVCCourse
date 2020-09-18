@@ -4,9 +4,11 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import com.example.demo.config.TokenProvider;
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BlogapiException;
 import com.example.demo.model.department.Department;
+import com.example.demo.model.project.Project;
 import com.example.demo.model.resetpasswordentity.ResetPasswordEntity;
 import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
@@ -21,7 +23,6 @@ import com.example.demo.reponsitory.RoleRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.security.SecurityConstants;
 import com.example.demo.service.UserService;
-import com.example.demo.shared.Utils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -212,7 +213,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             throw new AppException("Email " + email + " not found");
         }
 
-        String token = new Utils().generatePasswordResetToken(user.getUsername());
+        String token = new TokenProvider().generatePasswordResetToken(user.getUsername());
 
         ResetPasswordEntity resetPasswordEntity = new ResetPasswordEntity();
         resetPasswordEntity.setToken(token);
@@ -253,6 +254,27 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         userRepository.save(copyUser);
 
         return "Your password successfully updated.";
+    }
+
+    @Override
+    public List<User> getUsersFilter(String fn) {
+//        List<UserDto> returnValue = new ArrayList<>();
+        List<User> users = userRepository.myCustomQuery(fn);
+
+//        for (UserEntity userEntity : users) {
+//            UserDto userDto = new UserDto();
+//            BeanUtils.copyProperties(userEntity, userDto);
+//            returnValue.add(userDto);
+//        }
+
+        return users;
+    }
+
+    @Override
+    public List<Project> getUsersFilterProject(String fn, long input2) {
+        List<Project> users = userRepository.myCustomQueryProject(fn, input2);
+
+        return users;
     }
 
     /**

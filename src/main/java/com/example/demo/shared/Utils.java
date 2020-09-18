@@ -30,13 +30,6 @@ public class Utils {
         return new String(returnValue);
     }
 
-    public String generatePasswordResetToken(String username) {
-        String token = Jwts.builder()
-                .setSubject(username)
-                .setExpiration(new Date(System.currentTimeMillis() + PASSWORD_RESET_ACCESS_TOKEN_VALIDITY_SECONDS))
-                .signWith(SignatureAlgorithm.HS256, SIGNING_KEY)
-                .compact();
-        return token;
-    }
+
 
 }

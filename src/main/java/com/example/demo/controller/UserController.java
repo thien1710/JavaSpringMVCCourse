@@ -5,11 +5,9 @@ import javax.validation.Valid;
 import com.example.demo.config.Configs;
 import com.example.demo.config.Constants;
 import com.example.demo.exceptions.AppException;
+import com.example.demo.model.project.Project;
 import com.example.demo.model.user.User;
-import com.example.demo.payload.request.PasswordResetRequestModel;
-import com.example.demo.payload.request.RequestOperationName;
-import com.example.demo.payload.request.RequestOperationStatus;
-import com.example.demo.payload.request.UserAddResquest;
+import com.example.demo.payload.request.*;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.ForgotPasswordResponse;
 import com.example.demo.service.UserService;
@@ -23,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -128,10 +128,50 @@ public class UserController {
     )
     public String requestReset(@RequestParam String token,
                                                @RequestParam String password) {
+        Boolean passwordMatches = Configs.isValidTextRegrex(password, Constants.REGREX.PASSWORD);
+        if (!passwordMatches) {
+            throw new AppException("Password is wrong");
+        }
         return userService.requestPasswordReset(token, password);
     }
 
+    @GetMapping(path = "/search",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+            )
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public List<User> getUserByFirstname(@RequestParam(value = "keyword") String keyword) {
+        List<User> returnValue = new ArrayList<>();
 
+//        List<UserDto> users = userService.getUsersFilter(keyword);
+//        for (UserDto userDto : users) {
+//            UserRest userModel = new UserRest();
+//            BeanUtils.copyProperties(userDto, userModel);
+//            returnValue.add(userModel);
+//        }
+        returnValue = userService.getUsersFilter(keyword);
+
+        return returnValue;
+    }
+
+    @GetMapping(path = "/search1",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public List<Project> getUserByFirstnameProject(@RequestBody TestSearch testSearch) {
+        List<Project> returnValue = new ArrayList<>();
+
+//        List<UserDto> users = userService.getUsersFilter(keyword);
+//        for (UserDto userDto : users) {
+//            UserRest userModel = new UserRest();
+//            BeanUtils.copyProperties(userDto, userModel);
+//            returnValue.add(userModel);
+//        }
+        returnValue = userService.getUsersFilterProject(testSearch.getInput1(), testSearch.getInput2());
+
+        return returnValue;
+    }
 
 
 }

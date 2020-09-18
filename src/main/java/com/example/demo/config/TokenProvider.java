@@ -81,4 +81,13 @@ public class TokenProvider implements Serializable {
         return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 
+    public String generatePasswordResetToken(String username) {
+        String tokenResetPassword = Jwts.builder()
+                .setSubject(username)
+                .setExpiration(new Date(System.currentTimeMillis() + PASSWORD_RESET_ACCESS_TOKEN_VALIDITY_SECONDS*1000))
+                .signWith(SignatureAlgorithm.HS256, SIGNING_KEY)
+                .compact();
+        return tokenResetPassword;
+    }
+
 }
