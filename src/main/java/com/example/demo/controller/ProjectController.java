@@ -25,16 +25,6 @@ public class ProjectController {
     @Autowired
     private IAuthenticationFacade authenticationFacade;
 
-//    @GetMapping
-//    public ResponseEntity<PagedResponse<Comment>> getAllComments(@PathVariable(name = "postId") Long postId,
-//                                                                 @RequestParam(name = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
-//                                                                 @RequestParam(name = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
-//
-//        PagedResponse<Comment> allComments = commentService.getAllComments(postId, page, size);
-//
-//        return new ResponseEntity<PagedResponse<Comment>>(allComments, HttpStatus.OK);
-//    }
-//
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Project> addProject(@Valid @RequestBody ProjectRequest projectRequest,
@@ -69,17 +59,5 @@ public class ProjectController {
 
         return new ResponseEntity<ApiResponse>(response, status);
     }
-//
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Comment> getComment(@PathVariable(name = "postId") Long postId,
-//                                              @PathVariable(name = "id") Long id) {
-//        Comment comment = commentService.getComment(postId, id);
-//
-//        return new ResponseEntity<Comment>(comment, HttpStatus.OK);
-//    }
-//
-//
-//
-//
 
 }

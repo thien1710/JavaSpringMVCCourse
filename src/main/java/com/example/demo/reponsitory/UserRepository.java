@@ -6,6 +6,7 @@ import com.example.demo.shared.dto.UserDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotBlank;
@@ -14,9 +15,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-//    Optional<User> findByUsername(@NotBlank String username);
-
-//    Optional<User> findByEmail(@NotBlank String email);
 
     Boolean existsByUsername(@NotBlank String username);
 
@@ -29,12 +27,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findById(long id);
 
     User findByUsername(String username);
-
-//    @Query(value = "SELECT u FROM users u WHERE "
-//            + "CONCAT(u.id, u.email, u.firs_tname, u.last_name)"
-//            + " LIKE %?1%"
-//    )
-//    List<User> findAllOnUsers(String def);
 
     @Query(value = "SELECT u FROM User u WHERE CONCAT(u.id, u.email, u.firstName, u.lastName) LIKE %:sort%")
     List<User> myCustomQuery(@Param("sort") String sort);

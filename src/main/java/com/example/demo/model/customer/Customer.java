@@ -26,8 +26,8 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "customers")
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Customer extends UserDateAudit {
+//public class Customer extends UserDateAudit {
+public class Customer {
     private static final long serialVersionUID = 1L;
 
     @Id

@@ -21,7 +21,7 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "projects")
-public class Project extends UserDateAudit {
+public class Project {
     private static final long serialVersionUID = 1L;
 
     @Id

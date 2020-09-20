@@ -22,7 +22,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import com.example.demo.model.audit.DateAudit;
 import com.example.demo.model.customer.Customer;
 import com.example.demo.model.department.Department;
 import com.example.demo.model.infologin.InfoLogin;
@@ -36,13 +35,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"username"}),
         @UniqueConstraint(columnNames = {"email"})})
-public class User extends DateAudit {
+public class User {
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(nullable = false)
+    private String userIdHash;
+
 
     @NotBlank(message = "FirstName is mandatory")
     @Column(name = "first_name")
@@ -192,28 +195,6 @@ public class User extends DateAudit {
         this.password = password;
     }
 
-
-
-
-
-
-
-//    public List<Role> getRoles() {
-//
-//        return roles == null ? null : new ArrayList<>(roles);
-//    }
-//
-//    public void setRoles(List<Role> roles) {
-//
-////		if (roles == null) {
-////			this.roles = null;
-////		} else {
-////			this.roles = Collections.unmodifiableList(roles);
-////		}
-//        this.roles = roles;
-//    }
-
-
     public Set<Role> getRoles() {
         return roles;
     }
@@ -259,11 +240,6 @@ public class User extends DateAudit {
     }
 
     public void setDepartments(List<Department> departments) {
-        //		if (departments == null) {
-//			this.departments = null;
-//		} else {
-//			this.departments = Collections.unmodifiableList(departments);
-//		}
         this.departments = departments;
     }
 
@@ -273,5 +249,13 @@ public class User extends DateAudit {
 
     public void setInfoLogin(List<InfoLogin> infoLogin) {
         this.infoLogin = infoLogin;
+    }
+
+    public String getUserIdHash() {
+        return userIdHash;
+    }
+
+    public void setUserIdHash(String userId) {
+        this.userIdHash = userId;
     }
 }

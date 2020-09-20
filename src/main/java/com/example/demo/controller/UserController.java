@@ -143,12 +143,6 @@ public class UserController {
     public List<User> getUserByFirstname(@RequestParam(value = "keyword") String keyword) {
         List<User> returnValue = new ArrayList<>();
 
-//        List<UserDto> users = userService.getUsersFilter(keyword);
-//        for (UserDto userDto : users) {
-//            UserRest userModel = new UserRest();
-//            BeanUtils.copyProperties(userDto, userModel);
-//            returnValue.add(userModel);
-//        }
         returnValue = userService.getUsersFilter(keyword);
 
         return returnValue;
@@ -162,16 +156,9 @@ public class UserController {
     public List<Project> getUserByFirstnameProject(@RequestBody TestSearch testSearch) {
         List<Project> returnValue = new ArrayList<>();
 
-//        List<UserDto> users = userService.getUsersFilter(keyword);
-//        for (UserDto userDto : users) {
-//            UserRest userModel = new UserRest();
-//            BeanUtils.copyProperties(userDto, userModel);
-//            returnValue.add(userModel);
-//        }
         returnValue = userService.getUsersFilterProject(testSearch.getInput1(), testSearch.getInput2());
 
         return returnValue;
     }
-
 
 }

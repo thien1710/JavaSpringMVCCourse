@@ -6,13 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
-//    Page<Customer> findByCreatedBy(Long userId, Pageable pageable);
-
-//    Page<Customer> findByCategory(Long categoryId, Pageable pageable);
-
-//    Page<Customer> findByTags(List<Tag> tags, Pageable pageable);
-
-//    Long countByCreatedBy(Long userId);
 }

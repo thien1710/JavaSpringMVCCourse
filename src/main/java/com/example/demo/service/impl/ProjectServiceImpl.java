@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.config.Configs;
 import com.example.demo.config.ErrorMessages;
+import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BlogapiException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.model.customer.Customer;
@@ -35,21 +36,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private UserRepository userRepository;
 
-    //    @Override
-//    public PagedResponse<Comment> getAllComments(Long postId, int page, int size) {
-//        AppUtils.validatePageNumberAndSize(page, size);
-//        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "createdAt");
-//
-//        Page<Comment> comments = commentRepository.findByPostId(postId, pageable);
-//
-//        return new PagedResponse<Comment>(comments.getContent(), comments.getNumber(), comments.getSize(),
-//                comments.getTotalElements(), comments.getTotalPages(), comments.isLast());
-//    }
-//
     @Override
     public Project addProject(ProjectRequest projectRequest, Long customerId, Authentication authentication) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new ResourceNotFoundException(Configs.AppConstant.CUSTOMER, Configs.AppConstant.ID, customerId));
+                .orElseThrow(() -> new AppException(Configs.AppConstant.CUSTOMER + " " + Configs.AppConstant.ID + " " + customerId + "not found"));
         User user = userRepository.findByUsername(authentication.getName());
         if (user == null) throw new UsernameNotFoundException(authentication.getName() + " not found");
         Project project = new Project();
@@ -110,21 +100,4 @@ public class ProjectServiceImpl implements ProjectService {
         throw new BlogapiException(HttpStatus.UNAUTHORIZED,
                 ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + "delete" + ErrorMessages.THIS_PROJECT);
     }
-//
-//    @Override
-//    public Comment getComment(Long postId, Long id) {
-//        Post post = postRepository.findById(postId)
-//                .orElseThrow(() -> new ResourceNotFoundException(POST_STR, ID_STR, postId));
-//        Comment comment = commentRepository.findById(id)
-//                .orElseThrow(() -> new ResourceNotFoundException(COMMENT_STR, ID_STR, id));
-//        if (comment.getPost().getId().equals(post.getId())) {
-//            return comment;
-//        }
-//
-//        throw new BlogapiException(HttpStatus.BAD_REQUEST, COMMENT_DOES_NOT_BELONG_TO_POST);
-//    }
-//
-
-//
-//
 }

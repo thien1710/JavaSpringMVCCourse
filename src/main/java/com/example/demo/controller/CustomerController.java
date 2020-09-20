@@ -11,10 +11,14 @@ import com.example.demo.security.IAuthenticationFacade;
 import com.example.demo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -26,36 +30,7 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
-//
-//    @GetMapping
-//    public ResponseEntity<PagedResponse<Post>> getAllPosts(
-//            @RequestParam(value = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
-//            @RequestParam(value = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size) {
-//        PagedResponse<Post> response = postService.getAllPosts(page, size);
-//
-//        return new ResponseEntity<PagedResponse<Post>>(response, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/category/{id}")
-//    public ResponseEntity<PagedResponse<Post>> getPostsByCategory(
-//            @RequestParam(value = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
-//            @RequestParam(value = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size,
-//            @PathVariable(name = "id") Long id) {
-//        PagedResponse<Post> response = postService.getPostsByCategory(id, page, size);
-//
-//        return new ResponseEntity<PagedResponse<Post>>(response, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/tag/{id}")
-//    public ResponseEntity<PagedResponse<Post>> getPostsByTag(
-//            @RequestParam(value = "page", required = false, defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) Integer page,
-//            @RequestParam(value = "size", required = false, defaultValue = AppConstants.DEFAULT_PAGE_SIZE) Integer size,
-//            @PathVariable(name = "id") Long id) {
-//        PagedResponse<Post> response = postService.getPostsByTag(id, page, size);
-//
-//        return new ResponseEntity<PagedResponse<Post>>(response, HttpStatus.OK);
-//    }
-//
+
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CustomerResponse> addCustomer(@Valid @RequestBody CustomerRequest customerRequest, Authentication authentication) {
@@ -64,14 +39,7 @@ public class CustomerController {
 
         return new ResponseEntity<CustomerResponse>(postResponse, HttpStatus.CREATED);
     }
-//
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Post> getPost(@PathVariable(name = "id") Long id) {
-//        Post post = postService.getPost(id);
-//
-//        return new ResponseEntity<Post>(post, HttpStatus.OK);
-//    }
-//
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Customer> updateCustomer(@PathVariable(name = "id") Long id,
@@ -91,6 +59,20 @@ public class CustomerController {
         HttpStatus status = apiResponse.getSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping(
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public List<Customer> getUsers(@RequestParam(value = "page", defaultValue = Configs.PAGING.USER.PAGE) int page,
+                                   @RequestParam(value = "limit", defaultValue = Configs.PAGING.USER.LIMIT) int limit) {
+        List<Customer> returnValue = new ArrayList<>();
+        int currentPage = page > 0 ? page - 1 : Integer.parseInt(Configs.PAGING.USER.PAGE);
+        int currentLimit = limit > 0 ? limit : Integer.parseInt(Configs.PAGING.USER.LIMIT);
+        List<Customer> users = customerService.getUsers(currentPage, currentLimit);
+
+        return users;
     }
 
 }

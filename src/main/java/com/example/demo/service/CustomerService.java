@@ -8,23 +8,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface CustomerService {
 
-//    PagedResponse<Post> getAllPosts(int page, int size);
-//
-//    PagedResponse<Post> getPostsByCreatedBy(String username, int page, int size);
-//
-//    PagedResponse<Post> getPostsByCategory(Long id, int page, int size);
-//
-//    PagedResponse<Post> getPostsByTag(Long id, int page, int size);
-//
     Customer updateCustomer(Long id, CustomerRequest newPostRequest, Authentication authentication);
-//
+
     ApiResponse deleteCustomer(Long id, Authentication authentication);
-//
+
     CustomerResponse addCustomer(CustomerRequest postRequest, String currentUserUsername);
-//
-//    Post getPost(Long id);
+
+    List<Customer> getUsers(int page, int limit);
 
 }

@@ -14,8 +14,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 @Entity
 @Table(name = "messages")
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public class Message extends UserDateAudit {
+public class Message {
     private static final long serialVersionUID = 1L;
 
     @Id

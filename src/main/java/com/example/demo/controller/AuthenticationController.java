@@ -15,6 +15,7 @@ import com.example.demo.reponsitory.RoleRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.security.AuthToken;
 import com.example.demo.service.UserService;
+import com.example.demo.shared.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,6 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -58,6 +57,9 @@ public class AuthenticationController {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    Utils utils;
 
     //    @RequestMapping(value = "/generate-token", method = RequestMethod.POST)
     @PostMapping("/signin")
@@ -122,6 +124,10 @@ public class AuthenticationController {
         }
 
         user.setRoles(roles);
+
+        String publicUserId = utils.generateUserId(Configs.USER_ID_LENGTH);
+
+        user.setUserIdHash(publicUserId);
 
         User result = userRepository.save(user);
 
