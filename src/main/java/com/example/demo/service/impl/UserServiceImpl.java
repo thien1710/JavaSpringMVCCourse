@@ -35,6 +35,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, UserService {
     @Autowired
@@ -75,6 +80,18 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public User getCurrentUser(String username) {
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("example-unit");
+        try {
+            EntityManager em = emf.createEntityManager();
+            nativeQuery(em, "SHOW TABLES");
+            nativeQuery(em, "SHOW COLUMNS from Customer");
+            nativeQuery(em, "SHOW COLUMNS from Phones");
+            emf.close();
+        } finally {
+            emf.close();
+        }
+
         User user = userRepository.findByUsername(username);
 //                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         if (user == null) throw new UsernameNotFoundException(username);
@@ -284,6 +301,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         Duration diff = Duration.between(tokenCreationDate, now);
 
         return diff.toMinutes() >= SecurityConstants.PASSWORD_RESET_ACCESS_TOKEN_VALIDITY_SECONDS;
+    }
+
+    public static void nativeQuery(EntityManager em, String s) {
+        System.out.printf("'%s'%n", s);
+        Query query = em.createNativeQuery(s);
+        List list = query.getResultList();
+        for (Object o : list) {
+            if (o instanceof Object[]) {
+                System.out.println(Arrays.toString((Object[]) o));
+            } else {
+                System.out.println(o);
+            }
+        }
     }
 
 }

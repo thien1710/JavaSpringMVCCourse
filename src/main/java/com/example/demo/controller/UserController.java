@@ -48,15 +48,15 @@ public class UserController {
         return new ResponseEntity<ApiResponse>(newUser, HttpStatus.CREATED);
     }
 
-    @GetMapping(path = "/{id}",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public User getUser(@PathVariable(value = "id") Long id) {
-
-        User user = userService.getUserById(id);
-
-        return user;
-    }
+//    @GetMapping(path = "/{id}",
+//            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+//    public User getUser(@PathVariable(value = "id") Long id) {
+//
+//        User user = userService.getUserById(id);
+//
+//        return user;
+//    }
 
     @PutMapping("/{username}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")

@@ -89,5 +89,4 @@ public class TokenProvider implements Serializable {
                 .compact();
         return tokenResetPassword;
     }
-
 }
