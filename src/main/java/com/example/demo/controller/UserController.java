@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -77,15 +78,25 @@ public class UserController {
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
-        User user = userService.getCurrentUser(authentication.getName());
+//    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+////        User user = userService.getCurrentUser(authentication.getName());
+//        User user = userService.getUserById((long) 1);
+//        return new ResponseEntity<User>(user, HttpStatus.OK);
+//
+//    }
+    public Collection<User> getCurrentUser(Authentication authentication) {
+//        User user = userService.getCurrentUser(authentication.getName());
+        User user = userService.getUserById((long) 1);
+        Collection<User> userCollection = userService.getUserByComplexConditions("leanne", "leanne");
+//        return new ResponseEntity<User>(user, HttpStatus.OK);
 
-        return new ResponseEntity<User>(user, HttpStatus.OK);
-
+        return userCollection;
     }
+
 
     @PutMapping("/{username}/giveAdmin")
     @PreAuthorize("hasRole('ADMIN')")
+
     public ResponseEntity<ApiResponse> giveAdmin(@PathVariable(name = "username") Long id) {
         ApiResponse apiResponse = userService.giveAdmin(id);
 
@@ -102,14 +113,14 @@ public class UserController {
 
     @PostMapping(path = Configs.URL.USER.PASSWORD_FORGOT_REQUEST_URL,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
-    consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public ForgotPasswordResponse requestForget(@RequestBody PasswordResetRequestModel passwordResetRequestModel) {
         ForgotPasswordResponse returnValue = new ForgotPasswordResponse();
 
         String tokenForgotPassword = userService.requestPasswordForgot(passwordResetRequestModel.getEmail());
 
-        if (tokenForgotPassword != null){
+        if (tokenForgotPassword != null) {
             returnValue.setDescription(RequestOperationName.REQUEST_PASSWORD_RESET_SUCCESSFUL.name());
             returnValue.setResponseStatus(RequestOperationStatus.SUCCESS.name());
             returnValue.setToken(tokenForgotPassword);
@@ -119,7 +130,7 @@ public class UserController {
         }
 
 
-        return  returnValue;
+        return returnValue;
     }
 
     @PutMapping(path = Configs.URL.USER.PASSWORD_RESET_REQUEST_URL + "/test",
@@ -127,7 +138,7 @@ public class UserController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public String requestReset(@RequestParam String token,
-                                               @RequestParam String password) {
+                               @RequestParam String password) {
         Boolean passwordMatches = Configs.isValidTextRegrex(password, Constants.REGREX.PASSWORD);
         if (!passwordMatches) {
             throw new AppException("Password is wrong");
@@ -138,7 +149,7 @@ public class UserController {
     @GetMapping(path = "/search",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
-            )
+    )
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public List<User> getUserByFirstname(@RequestParam(value = "keyword") String keyword) {
         List<User> returnValue = new ArrayList<>();

@@ -8,6 +8,7 @@ import com.example.demo.payload.response.UserAddResponse;
 import com.example.demo.payload.response.UserResponse;
 import com.example.demo.shared.dto.UserDto;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface UserService {
@@ -18,7 +19,7 @@ public interface UserService {
 
     UserResponse getUser(String id);
 
-    User getUserById(long id);
+//    User getUserById(long id);
 
     User updateUser(User newUser, String username);
 
@@ -35,5 +36,9 @@ public interface UserService {
     List<User> getUsersFilter(String fn);
 
     List<Project> getUsersFilterProject(String fn, long input2);
+
+    User getUserById(Long id);
+
+    Collection<User> getUserByComplexConditions(String name, String username);
 
 }

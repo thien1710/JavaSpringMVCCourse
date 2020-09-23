@@ -8,6 +8,7 @@ import com.example.demo.config.Configs;
 import com.example.demo.config.TokenProvider;
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BlogapiException;
+import com.example.demo.model.customer.Customer;
 import com.example.demo.model.department.Department;
 import com.example.demo.model.project.Project;
 import com.example.demo.model.resetpasswordentity.ResetPasswordEntity;
@@ -35,10 +36,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -160,15 +162,15 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return userResponse;
     }
 
-    @Override
-    public User getUserById(long id) {
-        User user = userRepository.findById(id);
-
-        if (user == null)
-            throw new UsernameNotFoundException("Id not found");
-
-        return user;
-    }
+//    @Override
+//    public User getUserById(long id) {
+//        User user = userRepository.findById(id);
+//
+//        if (user == null)
+//            throw new UsernameNotFoundException("Id not found");
+//
+//        return user;
+//    }
 
     @Override
     public User updateUser(User newUser, String username) {
@@ -287,6 +289,57 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         List<Project> users = userRepository.myCustomQueryProject(fn, input2);
 
         return users;
+    }
+
+    @PersistenceContext
+    private EntityManager em;
+
+    @Override
+    public User getUserById(Long id) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<User> query = builder.createQuery(User.class);
+        Root<User> root = query.from(User.class);
+
+        Predicate condition = builder.equal(root.get("username"), "leanne");
+
+        query.select(root).where(condition);
+
+        return em.createQuery(query).getSingleResult();
+//        query.select(root).where(builder.like(root.get("username"), "leanne%"));
+//        return em.createQuery(query).getSingleResult();
+    }
+
+    @Override
+    public Collection<User> getUserByComplexConditions(String name, String username) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<User> query = builder.createQuery(User.class);
+        Root<User> root = query.from(User.class);
+
+        Predicate hasNameLike = builder.like(root.get("firstName"), name);
+        Predicate hasType = builder.like(root.get("username"), username+"%");
+
+        Predicate condition = builder.and(hasNameLike, hasType);
+
+        query.select(root).where(condition);
+        return em.createQuery(query).getResultList();
+
+
+//        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+//        CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class);
+//        Root<User> user = query.from(User.class);
+//        ListJoin<User, Customer> tasks = user.join(Cu);
+//        query.select(employee)
+//                .where(criteriaBuilder.equal(tasks.get(Task_.supervisor), employee.get(Employee_.name)));
+//        TypedQuery<Employee> typedQuery = entityManager.createQuery(query);
+//        typedQuery.getResultList().forEach(System.out::println);
+//
+//        user.fetch("user_id");
+//        query.select(employee)
+//                .distinct(true);
+//        TypedQuery<Employee> typedQuery = entityManager.createQuery(query);
+//        List<Employee> resultList = typedQuery.getResultList();
+
+
     }
 
     /**
