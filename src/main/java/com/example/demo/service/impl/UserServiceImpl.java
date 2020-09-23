@@ -9,12 +9,15 @@ import com.example.demo.config.TokenProvider;
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BlogapiException;
 import com.example.demo.model.customer.Customer;
+import com.example.demo.model.customer.Customer_;
 import com.example.demo.model.department.Department;
 import com.example.demo.model.project.Project;
+import com.example.demo.model.project.Project_;
 import com.example.demo.model.resetpasswordentity.ResetPasswordEntity;
 import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
 import com.example.demo.model.user.User;
+import com.example.demo.model.user.User_;
 import com.example.demo.payload.request.UserAddResquest;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.UserAddResponse;
@@ -37,10 +40,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -300,7 +300,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         CriteriaQuery<User> query = builder.createQuery(User.class);
         Root<User> root = query.from(User.class);
 
-        Predicate condition = builder.equal(root.get("username"), "leanne");
+        Predicate condition = builder.equal(root.get(User_.username), "leanne");
 
         query.select(root).where(condition);
 
@@ -310,27 +310,45 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public Collection<User> getUserByComplexConditions(String name, String username) {
-        CriteriaBuilder builder = em.getCriteriaBuilder();
-        CriteriaQuery<User> query = builder.createQuery(User.class);
-        Root<User> root = query.from(User.class);
+    public Collection<Customer> getUserByComplexConditions(String name, String username) {
+//        CriteriaBuilder builder = em.getCriteriaBuilder();
+//        CriteriaQuery<User> query = builder.createQuery(User.class);
+//        Root<User> root = query.from(User.class);
+//
+//        Predicate hasNameLike = builder.like(root.get("firstName"), name);
+//        Predicate hasType = builder.like(root.get("username"), username+"%");
+//
+//        Predicate condition = builder.and(hasNameLike, hasType);
+//
+//        query.select(root).where(condition);
+//        return em.createQuery(query).getResultList();
 
-        Predicate hasNameLike = builder.like(root.get("firstName"), name);
-        Predicate hasType = builder.like(root.get("username"), username+"%");
-
-        Predicate condition = builder.and(hasNameLike, hasType);
-
-        query.select(root).where(condition);
-        return em.createQuery(query).getResultList();
 
 
-//        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Customer> query = criteriaBuilder.createQuery(Customer.class);
+        Root<Customer> pet = query.from(Customer.class);
+        Join<Customer, User> owner = pet.join(Customer_.user);
+
 //        CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class);
 //        Root<User> user = query.from(User.class);
-//        ListJoin<User, Customer> tasks = user.join(Cu);
-//        query.select(employee)
-//                .where(criteriaBuilder.equal(tasks.get(Task_.supervisor), employee.get(Employee_.name)));
-//        TypedQuery<Employee> typedQuery = entityManager.createQuery(query);
+//        ListJoin<User, Customer> customer = user.join(User_);
+        Predicate hasNameLike = criteriaBuilder.like(owner.get(User_.username), "leanne%");
+        Predicate hasType = criteriaBuilder.equal(owner.get(User_.email), "leanne1.graham@gmail.com");
+
+        Predicate condition = criteriaBuilder.and(hasNameLike, hasType);
+
+        query.select(pet)
+                .where(condition);
+//                .where(criteriaBuilder.like(owner.get(User_.username), "leanne%"));
+
+
+
+
+
+
+        return em.createQuery(query).getResultList();
+//        TypedQuery<Customer> typedQuery = em.createQuery(query);
 //        typedQuery.getResultList().forEach(System.out::println);
 //
 //        user.fetch("user_id");
@@ -340,6 +358,24 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 //        List<Employee> resultList = typedQuery.getResultList();
 
 
+    }
+
+    @Override
+    public Collection<Project> getProject() {
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Project> cq = criteriaBuilder.createQuery(Project.class);
+
+        Root<Project> projectRoot = cq.from(Project.class);
+        Join<Customer, User> project = projectRoot.join(Project_.customer).join(Customer_.user);
+
+        Predicate hasNameLike = criteriaBuilder.like(project.get(User_.username), "leanne%");
+//        Predicate hasType = criteriaBuilder.equal(project.get(User_.email), "leanne1.graham@gmail.com");
+
+//        Predicate condition = criteriaBuilder.and(hasNameLike, hasType);
+
+        cq.select(projectRoot)
+                .where(hasNameLike);
+        return em.createQuery(cq).getResultList();
     }
 
     /**

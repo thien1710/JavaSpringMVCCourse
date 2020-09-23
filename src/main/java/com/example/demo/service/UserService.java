@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.model.customer.Customer;
 import com.example.demo.model.project.Project;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.request.UserAddResquest;
@@ -39,6 +40,8 @@ public interface UserService {
 
     User getUserById(Long id);
 
-    Collection<User> getUserByComplexConditions(String name, String username);
+    Collection<Customer> getUserByComplexConditions(String name, String username);
+
+    Collection<Project> getProject();
 
 }

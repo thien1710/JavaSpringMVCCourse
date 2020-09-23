@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import com.example.demo.config.Configs;
 import com.example.demo.config.Constants;
 import com.example.demo.exceptions.AppException;
+import com.example.demo.model.customer.Customer;
 import com.example.demo.model.project.Project;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.request.*;
@@ -78,17 +79,28 @@ public class UserController {
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
+
 //    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
 ////        User user = userService.getCurrentUser(authentication.getName());
 //        User user = userService.getUserById((long) 1);
 //        return new ResponseEntity<User>(user, HttpStatus.OK);
 //
 //    }
-    public Collection<User> getCurrentUser(Authentication authentication) {
+
+    public Collection<Project> getCurrentUser(Authentication authentication)
+    {
+        //get user
 //        User user = userService.getCurrentUser(authentication.getName());
-        User user = userService.getUserById((long) 1);
-        Collection<User> userCollection = userService.getUserByComplexConditions("leanne", "leanne");
+//        User user = userService.getUserById((long) 1);
+
+
+        //get customer
+//        Collection<Customer> userCollection = userService.getUserByComplexConditions("leanne", "leanne");
 //        return new ResponseEntity<User>(user, HttpStatus.OK);
+
+        Collection<Project> userCollection = userService.getProject();
+
+
 
         return userCollection;
     }
