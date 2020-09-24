@@ -18,7 +18,9 @@ import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
 import com.example.demo.model.user.User;
 import com.example.demo.model.user.User_;
+import com.example.demo.payload.request.SearchRequest;
 import com.example.demo.payload.request.UserAddResquest;
+import com.example.demo.payload.request.UserSearchCondition;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.UserAddResponse;
 import com.example.demo.payload.response.UserResponse;
@@ -83,20 +85,33 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Override
     public User getCurrentUser(String username) {
 
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("example-unit");
-        try {
-            EntityManager em = emf.createEntityManager();
-            nativeQuery(em, "SHOW TABLES");
-            nativeQuery(em, "SHOW COLUMNS from Customer");
-            nativeQuery(em, "SHOW COLUMNS from Phones");
-            emf.close();
-        } finally {
-            emf.close();
-        }
+//        EntityManagerFactory emf = Persistence.createEntityManagerFactory("example-unit");
+//        try {
+//            EntityManager em = emf.createEntityManager();
+//            nativeQuery(em, "SHOW TABLES");
+//            nativeQuery(em, "SHOW COLUMNS from Customer");
+//            nativeQuery(em, "SHOW COLUMNS from Phones");
+//            emf.close();
+//        } finally {
+//            emf.close();
+//        }
 
         User user = userRepository.findByUsername(username);
 //                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
         if (user == null) throw new UsernameNotFoundException(username);
+        Set<Role> role = user.getRoles();
+        Iterator<Role> it = role.iterator();
+
+//        while (it.hasNext()) {
+//
+//            Role element = it.next();
+//            String test = element.getName().name();
+//            System.out.println(element + "=====" + test);
+//        }
+
+        Role element = it.next();
+        String test = element.getName().name();
+        System.out.println(element + "=====" + test);
 
         return user;
     }
@@ -295,14 +310,14 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     private EntityManager em;
 
     @Override
-    public User getUserById(Long id) {
+    public User getUserById(String usename) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<User> query = builder.createQuery(User.class);
-        Root<User> root = query.from(User.class);
+        Root<User> userRoot = query.from(User.class);
 
-        Predicate condition = builder.equal(root.get(User_.username), "leanne");
+        Predicate condition = builder.equal(userRoot.get(User_.username), usename);
 
-        query.select(root).where(condition);
+        query.select(userRoot).where(condition);
 
         return em.createQuery(query).getSingleResult();
 //        query.select(root).where(builder.like(root.get("username"), "leanne%"));
@@ -310,44 +325,70 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public Collection<Customer> getUserByComplexConditions(String name, String username) {
-//        CriteriaBuilder builder = em.getCriteriaBuilder();
-//        CriteriaQuery<User> query = builder.createQuery(User.class);
-//        Root<User> root = query.from(User.class);
-//
-//        Predicate hasNameLike = builder.like(root.get("firstName"), name);
-//        Predicate hasType = builder.like(root.get("username"), username+"%");
-//
-//        Predicate condition = builder.and(hasNameLike, hasType);
-//
-//        query.select(root).where(condition);
-//        return em.createQuery(query).getResultList();
+    public Collection<User> searchUsers(SearchRequest searchRequest) {
 
+        if (searchRequest == null) {
+            throw new AppException("searchRequest not found");
+        }
 
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<User> query = builder.createQuery(User.class);
+        Root<User> userRoot = query.from(User.class);
 
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Customer> query = criteriaBuilder.createQuery(Customer.class);
-        Root<Customer> pet = query.from(Customer.class);
-        Join<Customer, User> owner = pet.join(Customer_.user);
+        UserSearchCondition userSearchCondition = searchRequest.getSearchCondition().getUserSearchCondition();
 
-//        CriteriaQuery<User> query = criteriaBuilder.createQuery(User.class);
-//        Root<User> user = query.from(User.class);
-//        ListJoin<User, Customer> customer = user.join(User_);
-        Predicate hasNameLike = criteriaBuilder.like(owner.get(User_.username), "leanne%");
-        Predicate hasType = criteriaBuilder.equal(owner.get(User_.email), "leanne1.graham@gmail.com");
+        Predicate hasDefault = builder.isTrue(builder.literal(true));
+        Predicate hasId = builder.equal(userRoot.get(User_.id), userSearchCondition.getId());
+        Predicate hasIdHash = builder.equal(userRoot.get(User_.userIdHash), userSearchCondition.getUserIdHash());
+        Predicate hasFirstname = builder.like(userRoot.get(User_.firstName),"%"+ userSearchCondition.getFirstName() +"%");
+        Predicate hasLastname = builder.like(userRoot.get(User_.lastName),"%"+ userSearchCondition.getLastName() +"%");
+        Predicate hasUsername = builder.like(userRoot.get(User_.username),"%"+ userSearchCondition.getUsername() +"%");
+        Predicate hasEmail = builder.equal(userRoot.get(User_.email), userSearchCondition.getEmail());
+        Predicate hasAddress = builder.like(userRoot.get(User_.address),"%"+ userSearchCondition.getAddress() +"%");
+        Predicate hasPhone = builder.equal(userRoot.get(User_.phone), userSearchCondition.getPhone());
+        Predicate hasSalaryNum = builder.greaterThanOrEqualTo(userRoot.get(User_.salaryNum), userSearchCondition.getSalaryNum());
 
-        Predicate condition = criteriaBuilder.and(hasNameLike, hasType);
+        Predicate condition = builder.and(hasDefault);
 
-        query.select(pet)
-                .where(condition);
-//                .where(criteriaBuilder.like(owner.get(User_.username), "leanne%"));
+        if (userSearchCondition.getId() != null) {
+            condition = builder.and(condition, hasId);
+        }
 
+        if (userSearchCondition.getUserIdHash() != null) {
+            condition = builder.and(condition, hasIdHash);
+        }
 
+        if (userSearchCondition.getFirstName() != null) {
+            condition = builder.and(condition, hasFirstname);
+        }
 
+        if (userSearchCondition.getLastName() != null) {
+            condition = builder.and(condition, hasLastname);
+        }
 
+        if (userSearchCondition.getUsername() != null) {
+            condition = builder.and(condition, hasUsername);
+        }
 
+        if (userSearchCondition.getEmail() != null) {
+            condition = builder.and(condition, hasEmail);
+        }
 
+        if (userSearchCondition.getAddress() != null) {
+            condition = builder.and(condition, hasAddress);
+        }
+
+        if (userSearchCondition.getPhone() != null) {
+            condition = builder.and(condition, hasPhone);
+        }
+
+        if (userSearchCondition.getSalaryNum() != null) {
+            condition = builder.and(condition, hasSalaryNum);
+        }
+
+        query.select(userRoot).where(condition);
         return em.createQuery(query).getResultList();
+
 //        TypedQuery<Customer> typedQuery = em.createQuery(query);
 //        typedQuery.getResultList().forEach(System.out::println);
 //
@@ -368,7 +409,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         Root<Project> projectRoot = cq.from(Project.class);
         Join<Customer, User> project = projectRoot.join(Project_.customer).join(Customer_.user);
 
-        Predicate hasNameLike = criteriaBuilder.like(project.get(User_.username), "leanne%");
+        Predicate hasNameLike = criteriaBuilder.like(project.get(), "leanne%");
 //        Predicate hasType = criteriaBuilder.equal(project.get(User_.email), "leanne1.graham@gmail.com");
 
 //        Predicate condition = criteriaBuilder.and(hasNameLike, hasType);

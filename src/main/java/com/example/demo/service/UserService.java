@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.model.customer.Customer;
 import com.example.demo.model.project.Project;
 import com.example.demo.model.user.User;
+import com.example.demo.payload.request.SearchRequest;
 import com.example.demo.payload.request.UserAddResquest;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.UserAddResponse;
@@ -38,9 +39,9 @@ public interface UserService {
 
     List<Project> getUsersFilterProject(String fn, long input2);
 
-    User getUserById(Long id);
+    User getUserById(String usename);
 
-    Collection<Customer> getUserByComplexConditions(String name, String username);
+    Collection<User> searchUsers(SearchRequest searchRequest);
 
     Collection<Project> getProject();
 

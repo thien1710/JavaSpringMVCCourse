@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 public class SignUpRequest {
     @NotBlank
-    @UniqueElements
+//    @UniqueElements
     @Size(min = 4, max = 40)
     private String firstName;
 

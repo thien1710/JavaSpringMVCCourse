@@ -6,9 +6,14 @@ import com.example.demo.exceptions.BlogapiException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exceptions.UnauthorizedException;
 import com.example.demo.model.customer.Customer;
+import com.example.demo.model.customer.Customer_;
 import com.example.demo.model.role.RoleName;
 import com.example.demo.model.user.User;
+import com.example.demo.model.user.User_;
 import com.example.demo.payload.request.CustomerRequest;
+import com.example.demo.payload.request.CustomerSearchCondition;
+import com.example.demo.payload.request.SearchRequest;
+import com.example.demo.payload.request.UserSearchCondition;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.CustomerResponse;
 import com.example.demo.reponsitory.CustomerRepository;
@@ -25,6 +30,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -96,6 +104,104 @@ public class CustomerServiceImpl implements CustomerService {
         List<Customer> users = usersPage.getContent();
 
         return users;
+    }
+
+    @PersistenceContext
+    private EntityManager em;
+
+    @Override
+    public Collection<Customer> searchCustomers(SearchRequest searchRequest) {
+        CriteriaBuilder builder = em.getCriteriaBuilder();
+        CriteriaQuery<Customer> query = builder.createQuery(Customer.class);
+        Root<Customer> customerRoot = query.from(Customer.class);
+        Join<Customer, User> customerUserJoin = customerRoot.join(Customer_.user);
+
+        UserSearchCondition userSearchCondition = searchRequest.getSearchCondition().getUserSearchCondition();
+        CustomerSearchCondition customerSearchCondition = searchRequest.getSearchCondition().getCustomerSearchCondition();
+
+        /**
+         * Customer condition
+         */
+        Predicate hasCustomerId = builder.equal(customerRoot.get(Customer_.id), customerSearchCondition.getId());
+        Predicate hasCustomerName = builder.equal(customerRoot.get(Customer_.cutomerName), customerSearchCondition.getCutomerName());
+        Predicate hasCustomerPhone = builder.equal(customerRoot.get(Customer_.phone), customerSearchCondition.getPhone());
+        Predicate hasCustomerEmail = builder.equal(customerRoot.get(Customer_.email), customerSearchCondition.getEmail());
+        Predicate hasCustomerAddress = builder.equal(customerRoot.get(Customer_.address), customerSearchCondition.getAddress());
+
+        /**
+         * User condition
+         */
+        Predicate hasDefault = builder.isTrue(builder.literal(true));
+        Predicate hasId = builder.equal(customerUserJoin.get(User_.id), userSearchCondition.getId());
+        Predicate hasIdHash = builder.equal(customerUserJoin.get(User_.userIdHash), userSearchCondition.getUserIdHash());
+        Predicate hasFirstname = builder.like(customerUserJoin.get(User_.firstName), "%" + userSearchCondition.getFirstName() + "%");
+        Predicate hasLastname = builder.like(customerUserJoin.get(User_.lastName), "%" + userSearchCondition.getLastName() + "%");
+        Predicate hasUsername = builder.like(customerUserJoin.get(User_.username), "%" + userSearchCondition.getUsername() + "%");
+        Predicate hasEmail = builder.equal(customerUserJoin.get(User_.email), userSearchCondition.getEmail());
+        Predicate hasAddress = builder.like(customerUserJoin.get(User_.address), "%" + userSearchCondition.getAddress() + "%");
+        Predicate hasPhone = builder.equal(customerUserJoin.get(User_.phone), userSearchCondition.getPhone());
+        Predicate hasSalaryNum = builder.greaterThanOrEqualTo(customerUserJoin.get(User_.salaryNum), userSearchCondition.getSalaryNum());
+
+        Predicate condition = builder.and(hasDefault);
+
+        if (userSearchCondition.getId() != null) {
+            condition = builder.and(condition, hasId);
+        }
+
+        if (userSearchCondition.getUserIdHash() != null) {
+            condition = builder.and(condition, hasIdHash);
+        }
+
+        if (userSearchCondition.getFirstName() != null) {
+            condition = builder.and(condition, hasFirstname);
+        }
+
+        if (userSearchCondition.getLastName() != null) {
+            condition = builder.and(condition, hasLastname);
+        }
+
+        if (userSearchCondition.getUsername() != null) {
+            condition = builder.and(condition, hasUsername);
+        }
+
+        if (userSearchCondition.getEmail() != null) {
+            condition = builder.and(condition, hasEmail);
+        }
+
+        if (userSearchCondition.getAddress() != null) {
+            condition = builder.and(condition, hasAddress);
+        }
+
+        if (userSearchCondition.getPhone() != null) {
+            condition = builder.and(condition, hasPhone);
+        }
+
+        if (userSearchCondition.getSalaryNum() != null) {
+            condition = builder.and(condition, hasSalaryNum);
+        }
+
+        if (customerSearchCondition.getId() != null) {
+            condition = builder.and(condition, hasCustomerId);
+        }
+
+        if (customerSearchCondition.getAddress() != null) {
+            condition = builder.and(condition, hasCustomerAddress);
+        }
+
+        if (customerSearchCondition.getCutomerName() != null) {
+            condition = builder.and(condition, hasCustomerName);
+        }
+
+        if (customerSearchCondition.getEmail() != null) {
+            condition = builder.and(condition, hasCustomerEmail);
+        }
+
+        if (customerSearchCondition.getPhone() != null) {
+            condition = builder.and(condition, hasCustomerPhone);
+        }
+
+        query.select(customerRoot).where(condition);
+        return em.createQuery(query).getResultList();
     }
 
 }

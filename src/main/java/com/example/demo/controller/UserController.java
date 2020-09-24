@@ -87,6 +87,8 @@ public class UserController {
 //
 //    }
 
+
+    //getcurrentUser
     public Collection<Project> getCurrentUser(Authentication authentication)
     {
         //get user
@@ -104,6 +106,11 @@ public class UserController {
 
         return userCollection;
     }
+//    public User getCurrentUser(Authentication authentication)
+//    {
+//        User user = userService.getCurrentUser(authentication.getName());
+//        return user;
+//    }
 
 
     @PutMapping("/{username}/giveAdmin")
@@ -158,7 +165,7 @@ public class UserController {
         return userService.requestPasswordReset(token, password);
     }
 
-    @GetMapping(path = "/search",
+    @GetMapping(path = "/search11111",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
@@ -182,6 +189,16 @@ public class UserController {
         returnValue = userService.getUsersFilterProject(testSearch.getInput1(), testSearch.getInput2());
 
         return returnValue;
+    }
+
+    @GetMapping(path = "/search",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public Collection<User> getUsers(@RequestBody SearchRequest searchRequest) {
+        Collection<User> userCollection = userService.searchUsers(searchRequest);
+        return userCollection;
     }
 
 }

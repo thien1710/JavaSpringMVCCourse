@@ -4,7 +4,9 @@ import javax.validation.Valid;
 
 import com.example.demo.config.Configs;
 import com.example.demo.model.customer.Customer;
+import com.example.demo.model.user.User;
 import com.example.demo.payload.request.CustomerRequest;
+import com.example.demo.payload.request.SearchRequest;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.CustomerResponse;
 import com.example.demo.security.IAuthenticationFacade;
@@ -18,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -73,6 +76,16 @@ public class CustomerController {
         List<Customer> users = customerService.getUsers(currentPage, currentLimit);
 
         return users;
+    }
+
+    @GetMapping(path = "/search",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+    )
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public Collection<Customer> getUsers(@RequestBody SearchRequest searchRequest) {
+        Collection<Customer> userCollection = customerService.searchCustomers(searchRequest);
+        return userCollection;
     }
 
 }

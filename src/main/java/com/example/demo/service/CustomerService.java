@@ -1,7 +1,9 @@
 package com.example.demo.service;
 
 import com.example.demo.model.customer.Customer;
+import com.example.demo.model.user.User;
 import com.example.demo.payload.request.CustomerRequest;
+import com.example.demo.payload.request.SearchRequest;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.CustomerResponse;
 import org.springframework.security.core.Authentication;
@@ -19,5 +21,7 @@ public interface CustomerService {
     CustomerResponse addCustomer(CustomerRequest postRequest, String currentUserUsername);
 
     List<Customer> getUsers(int page, int limit);
+
+    Collection<Customer> searchCustomers(SearchRequest searchRequest);
 
 }
