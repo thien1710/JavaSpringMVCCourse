@@ -119,6 +119,8 @@ public class CustomerServiceImpl implements CustomerService {
         UserSearchCondition userSearchCondition = searchRequest.getSearchCondition().getUserSearchCondition();
         CustomerSearchCondition customerSearchCondition = searchRequest.getSearchCondition().getCustomerSearchCondition();
 
+        Predicate hasDefault = builder.isTrue(builder.literal(true));
+
         /**
          * Customer condition
          */
@@ -131,7 +133,6 @@ public class CustomerServiceImpl implements CustomerService {
         /**
          * User condition
          */
-        Predicate hasDefault = builder.isTrue(builder.literal(true));
         Predicate hasId = builder.equal(customerUserJoin.get(User_.id), userSearchCondition.getId());
         Predicate hasIdHash = builder.equal(customerUserJoin.get(User_.userIdHash), userSearchCondition.getUserIdHash());
         Predicate hasFirstname = builder.like(customerUserJoin.get(User_.firstName), "%" + userSearchCondition.getFirstName() + "%");

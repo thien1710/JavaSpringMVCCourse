@@ -388,35 +388,6 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         query.select(userRoot).where(condition);
         return em.createQuery(query).getResultList();
-
-//        TypedQuery<Customer> typedQuery = em.createQuery(query);
-//        typedQuery.getResultList().forEach(System.out::println);
-//
-//        user.fetch("user_id");
-//        query.select(employee)
-//                .distinct(true);
-//        TypedQuery<Employee> typedQuery = entityManager.createQuery(query);
-//        List<Employee> resultList = typedQuery.getResultList();
-
-
-    }
-
-    @Override
-    public Collection<Project> getProject() {
-        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<Project> cq = criteriaBuilder.createQuery(Project.class);
-
-        Root<Project> projectRoot = cq.from(Project.class);
-        Join<Customer, User> project = projectRoot.join(Project_.customer).join(Customer_.user);
-
-        Predicate hasNameLike = criteriaBuilder.like(project.get(), "leanne%");
-//        Predicate hasType = criteriaBuilder.equal(project.get(User_.email), "leanne1.graham@gmail.com");
-
-//        Predicate condition = criteriaBuilder.and(hasNameLike, hasType);
-
-        cq.select(projectRoot)
-                .where(hasNameLike);
-        return em.createQuery(cq).getResultList();
     }
 
     /**

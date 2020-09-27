@@ -79,39 +79,11 @@ public class UserController {
 
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
+        User user = userService.getCurrentUser(authentication.getName());
+        return new ResponseEntity<User>(user, HttpStatus.OK);
 
-//    public ResponseEntity<User> getCurrentUser(Authentication authentication) {
-////        User user = userService.getCurrentUser(authentication.getName());
-//        User user = userService.getUserById((long) 1);
-//        return new ResponseEntity<User>(user, HttpStatus.OK);
-//
-//    }
-
-
-    //getcurrentUser
-    public Collection<Project> getCurrentUser(Authentication authentication)
-    {
-        //get user
-//        User user = userService.getCurrentUser(authentication.getName());
-//        User user = userService.getUserById((long) 1);
-
-
-        //get customer
-//        Collection<Customer> userCollection = userService.getUserByComplexConditions("leanne", "leanne");
-//        return new ResponseEntity<User>(user, HttpStatus.OK);
-
-        Collection<Project> userCollection = userService.getProject();
-
-
-
-        return userCollection;
     }
-//    public User getCurrentUser(Authentication authentication)
-//    {
-//        User user = userService.getCurrentUser(authentication.getName());
-//        return user;
-//    }
-
 
     @PutMapping("/{username}/giveAdmin")
     @PreAuthorize("hasRole('ADMIN')")
@@ -163,32 +135,6 @@ public class UserController {
             throw new AppException("Password is wrong");
         }
         return userService.requestPasswordReset(token, password);
-    }
-
-    @GetMapping(path = "/search11111",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
-            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
-    )
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public List<User> getUserByFirstname(@RequestParam(value = "keyword") String keyword) {
-        List<User> returnValue = new ArrayList<>();
-
-        returnValue = userService.getUsersFilter(keyword);
-
-        return returnValue;
-    }
-
-    @GetMapping(path = "/search1",
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
-            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
-    )
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public List<Project> getUserByFirstnameProject(@RequestBody TestSearch testSearch) {
-        List<Project> returnValue = new ArrayList<>();
-
-        returnValue = userService.getUsersFilterProject(testSearch.getInput1(), testSearch.getInput2());
-
-        return returnValue;
     }
 
     @GetMapping(path = "/search",

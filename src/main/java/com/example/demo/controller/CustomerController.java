@@ -83,7 +83,7 @@ public class CustomerController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public Collection<Customer> getUsers(@RequestBody SearchRequest searchRequest) {
+    public Collection<Customer> searchCustomers(@RequestBody SearchRequest searchRequest) {
         Collection<Customer> userCollection = customerService.searchCustomers(searchRequest);
         return userCollection;
     }

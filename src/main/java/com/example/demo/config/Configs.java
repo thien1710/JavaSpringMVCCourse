@@ -13,7 +13,8 @@ public class Configs {
         }
 
         interface PROJECT {
-            String PROJECTS = "/api/v1/customers/{customerId}/projects";
+            String PROJECTS = "/api/v1";
+            String CUSTOMERID_PATH = "/customers/{customerId}/projects";
         }
 
         interface CUSTOMER {
