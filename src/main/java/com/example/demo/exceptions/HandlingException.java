@@ -2,20 +2,20 @@ package com.example.demo.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public class BlogapiException extends RuntimeException {
+public class HandlingException extends RuntimeException {
 
     private static final long serialVersionUID = -6593330219878485669L;
 
     private final HttpStatus status;
     private final String message;
 
-    public BlogapiException(HttpStatus status, String message) {
+    public HandlingException(HttpStatus status, String message) {
         super();
         this.status = status;
         this.message = message;
     }
 
-    public BlogapiException(HttpStatus status, String message, Throwable exception) {
+    public HandlingException(HttpStatus status, String message, Throwable exception) {
         super(exception);
         this.status = status;
         this.message = message;

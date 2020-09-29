@@ -7,12 +7,9 @@ import java.util.*;
 import com.example.demo.config.Configs;
 import com.example.demo.config.TokenProvider;
 import com.example.demo.exceptions.AppException;
-import com.example.demo.exceptions.BlogapiException;
-import com.example.demo.model.customer.Customer;
-import com.example.demo.model.customer.Customer_;
+import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.department.Department;
 import com.example.demo.model.project.Project;
-import com.example.demo.model.project.Project_;
 import com.example.demo.model.resetpasswordentity.ResetPasswordEntity;
 import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
@@ -120,11 +117,11 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public ApiResponse addUser(UserAddResquest userAddResquest) {
         User user = new User();
         if (userRepository.existsByUsername(userAddResquest.getUsername())) {
-            throw new BlogapiException(HttpStatus.BAD_REQUEST, "Username is already taken");
+            throw new HandlingException(HttpStatus.BAD_REQUEST, "Username is already taken");
         }
 
         if (userRepository.existsByEmail(userAddResquest.getEmail())) {
-            throw new BlogapiException(HttpStatus.BAD_REQUEST, "Email is already taken");
+            throw new HandlingException(HttpStatus.BAD_REQUEST, "Email is already taken");
         }
 
         Set<Role> roles = new HashSet<>();
@@ -137,7 +134,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             roles.add(roleRepository.findByName(RoleName.USER)
                     .orElseThrow(() -> new AppException("User role not set")));
         } else {
-            throw new BlogapiException(HttpStatus.BAD_REQUEST, "Role not found");
+            throw new HandlingException(HttpStatus.BAD_REQUEST, "Role not found");
         }
 
         user.setRoles(roles);
@@ -344,7 +341,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             throw new AppException("userSearchCondition is mandatory");
         }
         Predicate hasDefault = builder.isTrue(builder.literal(true));
-        Predicate hasId = builder.equal(userRoot.get(User_.id), userSearchCondition.getId());
+        Predicate hasId = builder.greaterThanOrEqualTo(userRoot.get(User_.id), userSearchCondition.getId());
         Predicate hasIdHash = builder.equal(userRoot.get(User_.userIdHash), userSearchCondition.getUserIdHash());
         Predicate hasFirstname = builder.like(userRoot.get(User_.firstName),"%"+ userSearchCondition.getFirstName() +"%");
         Predicate hasLastname = builder.like(userRoot.get(User_.lastName),"%"+ userSearchCondition.getLastName() +"%");

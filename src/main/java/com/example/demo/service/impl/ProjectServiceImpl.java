@@ -3,8 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.config.Configs;
 import com.example.demo.config.ErrorMessages;
 import com.example.demo.exceptions.AppException;
-import com.example.demo.exceptions.BlogapiException;
-import com.example.demo.exceptions.ResourceNotFoundException;
+import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
 import com.example.demo.model.customer.Customer_;
 import com.example.demo.model.project.Project;
@@ -18,6 +17,7 @@ import com.example.demo.reponsitory.CustomerRepository;
 import com.example.demo.reponsitory.ProjectRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.service.ProjectService;
+import com.example.demo.shared.EnumConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -32,8 +32,6 @@ import java.util.Collection;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
-
-    private static final String PROJECT_DOES_NOT_BELONG_TO_CUSTOMER = "Project does not belong to customer";
 
     @Autowired
     private ProjectRepository projectRepository;
@@ -63,14 +61,14 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Project updateProject(Long customerId, Long id, ProjectRequest projectRequest, Authentication authentication) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new BlogapiException(HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         String.format("%s not found with %s: '%s'", Configs.AppConstant.CUSTOMER, Configs.AppConstant.ID, customerId)));
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new BlogapiException(HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         String.format("%s not found with %s: '%s'", Configs.AppConstant.PROJECT, Configs.AppConstant.ID, id)));
 
         if (!project.getCustomer().getId().equals(customer.getId())){
-            throw new BlogapiException(HttpStatus.BAD_REQUEST, PROJECT_DOES_NOT_BELONG_TO_CUSTOMER);
+            throw new HandlingException(HttpStatus.BAD_REQUEST, EnumConstants.PROJECT.getEnumConstants() + ErrorMessages.DOES_NOT_BELONG_TO + EnumConstants.CUSTOMER.getEnumConstants());
         }
 
         if (project.getUser().getUsername().equals(authentication.getName())
@@ -81,21 +79,21 @@ public class ProjectServiceImpl implements ProjectService {
             return updatedProject;
         }
 
-        throw new BlogapiException(HttpStatus.UNAUTHORIZED,
-                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + "update" + ErrorMessages.THIS_PROJECT);
+        throw new HandlingException(HttpStatus.UNAUTHORIZED,
+                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + EnumConstants.UPDATE.getEnumConstants() + EnumConstants.PROJECT.getEnumConstants());
     }
 
     @Override
     public ApiResponse deleteProject(Long customerId, Long id, Authentication authentication) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new BlogapiException(HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         String.format("%s not found with %s: '%s'", Configs.AppConstant.CUSTOMER, Configs.AppConstant.ID, id)));
         Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new BlogapiException(HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         String.format("%s not found with %s: '%s'", Configs.AppConstant.PROJECT, Configs.AppConstant.ID, id)));
 
         if (!project.getCustomer().getId().equals(customer.getId())){
-            throw new BlogapiException(HttpStatus.BAD_REQUEST, PROJECT_DOES_NOT_BELONG_TO_CUSTOMER);
+            throw new HandlingException(HttpStatus.BAD_REQUEST, EnumConstants.PROJECT.getEnumConstants() + ErrorMessages.DOES_NOT_BELONG_TO + EnumConstants.CUSTOMER.getEnumConstants());
         }
 
         if (project.getUser().getUsername().equals(authentication.getName())
@@ -105,8 +103,8 @@ public class ProjectServiceImpl implements ProjectService {
             return new ApiResponse(Boolean.TRUE, "You successfully deleted comment");
         }
 
-        throw new BlogapiException(HttpStatus.UNAUTHORIZED,
-                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + "delete" + ErrorMessages.THIS_PROJECT);
+        throw new HandlingException(HttpStatus.UNAUTHORIZED,
+                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + EnumConstants.UPDATE.getEnumConstants() + EnumConstants.PROJECT.getEnumConstants());
     }
 
     @PersistenceContext
@@ -116,6 +114,13 @@ public class ProjectServiceImpl implements ProjectService {
     public Collection<Project> searchProject(SearchRequest searchRequest) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Project> query = builder.createQuery(Project.class);
+
+        //User
+        Root<User> userRoot = query.from(User.class);
+
+        //Customer
+        Root<Customer> customerRoot = query.from(Customer.class);
+        Join<Customer, User> customerUserJoin = customerRoot.join(Customer_.user);
 
         Root<Project> project = query.from(Project.class);
         Join<Project, Customer> customer = project.join(Project_.customer);

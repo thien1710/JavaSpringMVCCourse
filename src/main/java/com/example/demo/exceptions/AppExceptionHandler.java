@@ -1,11 +1,10 @@
 package com.example.demo.exceptions;
 
-import com.example.demo.ui.model.response.ErrorDetails;
-import com.example.demo.ui.model.response.ErrorMessages;
+import com.example.demo.shared.ErrorDetails;
+import com.example.demo.shared.ErrorMessages;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;

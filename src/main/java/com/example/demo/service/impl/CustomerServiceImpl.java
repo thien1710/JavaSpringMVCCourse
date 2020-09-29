@@ -1,11 +1,7 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.config.Configs;
 import com.example.demo.config.ErrorMessages;
-import com.example.demo.exceptions.AppException;
-import com.example.demo.exceptions.BlogapiException;
-import com.example.demo.exceptions.ResourceNotFoundException;
-import com.example.demo.exceptions.UnauthorizedException;
+import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
 import com.example.demo.model.customer.Customer_;
 import com.example.demo.model.role.RoleName;
@@ -20,13 +16,13 @@ import com.example.demo.payload.response.CustomerResponse;
 import com.example.demo.reponsitory.CustomerRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.service.CustomerService;
+import com.example.demo.shared.EnumConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -34,7 +30,6 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -67,8 +62,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer updateCustomer(Long id, CustomerRequest customerRequest, Authentication authentication) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new BlogapiException(HttpStatus.NOT_FOUND,
-                        String.format("%s not found with %s: '%s'", Configs.AppConstant.CUSTOMER, Configs.AppConstant.ID, id)));
+                .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+                        EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage() + EnumConstants.ID.getEnumConstants() + " = " + id));
 
         if (customer.getUser().getUsername().equals(authentication.getName())
                 || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))
@@ -78,23 +73,23 @@ public class CustomerServiceImpl implements CustomerService {
             return updatedCustomer;
         }
 
-        throw new BlogapiException(HttpStatus.UNAUTHORIZED,
-                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + " update" + ErrorMessages.THIS_PROJECT.getErrorMessage());
+        throw new HandlingException(HttpStatus.UNAUTHORIZED,
+                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + EnumConstants.UPDATE.getEnumConstants() + EnumConstants.THIS_PROJECT.getEnumConstants());
     }
 
     @Override
     public ApiResponse deleteCustomer(Long id, Authentication authentication) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new BlogapiException(HttpStatus.NOT_FOUND,
-                        String.format("%s not found with %s: '%s'", Configs.AppConstant.CUSTOMER, Configs.AppConstant.ID, id)));
+                .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+                        EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage() + EnumConstants.ID.getEnumConstants() + " = " + id));
         if (customer.getUser().getUsername().equals(authentication.getName())
                 || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))) {
             customerRepository.deleteById(id);
             return new ApiResponse(Boolean.TRUE, "You successfully deleted post");
         }
 
-        throw new BlogapiException(HttpStatus.UNAUTHORIZED,
-                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + " delete" + ErrorMessages.THIS_PROJECT.getErrorMessage());
+        throw new HandlingException(HttpStatus.UNAUTHORIZED,
+                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + EnumConstants.DELETE.getEnumConstants() + EnumConstants.THIS_PROJECT.getEnumConstants());
     }
 
     @Override
@@ -126,7 +121,8 @@ public class CustomerServiceImpl implements CustomerService {
          * Customer condition
          */
         if (customerSearchCondition == null) {
-            throw new AppException("customerSearchCondition is mandatory");
+            throw new HandlingException(HttpStatus.NOT_FOUND,
+                    EnumConstants.USER_CONDITION.getEnumConstants() +ErrorMessages.IS_MANDATORY.getErrorMessage());
         }
         Predicate hasCustomerId = builder.greaterThanOrEqualTo(customerRoot.get(Customer_.id), customerSearchCondition.getId());
         Predicate hasCustomerName = builder.like(customerRoot.get(Customer_.customerName), "%" + customerSearchCondition.getCustomerName() + "%");
@@ -138,7 +134,8 @@ public class CustomerServiceImpl implements CustomerService {
          * User condition
          */
         if (userSearchCondition == null) {
-            throw new AppException("userSearchCondition is mandatory");
+            throw new HandlingException(HttpStatus.NOT_FOUND,
+                    EnumConstants.CUSTOMER_CONDITION.getEnumConstants() +ErrorMessages.IS_MANDATORY.getErrorMessage());
         }
         Predicate hasId = builder.equal(customerUserJoin.get(User_.id), userSearchCondition.getId());
         Predicate hasIdHash = builder.equal(customerUserJoin.get(User_.userIdHash), userSearchCondition.getUserIdHash());

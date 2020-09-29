@@ -1,4 +1,4 @@
-package com.example.demo.ui.model.response;
+package com.example.demo.shared;
 
 import java.util.Date;
 

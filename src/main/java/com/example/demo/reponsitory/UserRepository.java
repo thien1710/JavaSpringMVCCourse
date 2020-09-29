@@ -2,12 +2,10 @@ package com.example.demo.reponsitory;
 
 import com.example.demo.model.project.Project;
 import com.example.demo.model.user.User;
-import com.example.demo.shared.dto.UserDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotBlank;

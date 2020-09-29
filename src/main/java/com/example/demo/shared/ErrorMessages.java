@@ -1,4 +1,4 @@
-package com.example.demo.ui.model.response;
+package com.example.demo.shared;
 
 public enum ErrorMessages {
     MISSING_REQUIRED_FIELD("Missing required field"),

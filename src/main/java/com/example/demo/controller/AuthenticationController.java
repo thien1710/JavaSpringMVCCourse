@@ -4,7 +4,7 @@ import com.example.demo.config.Configs;
 import com.example.demo.config.Constants;
 import com.example.demo.config.TokenProvider;
 import com.example.demo.exceptions.AppException;
-import com.example.demo.exceptions.BlogapiException;
+import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.role.Role;
 import com.example.demo.model.role.RoleName;
 import com.example.demo.model.user.User;
@@ -75,7 +75,7 @@ public class AuthenticationController {
             final String token = jwtTokenUtil.generateToken(authentication);
             return ResponseEntity.ok(new AuthToken(token));
         } catch (Exception e) {
-            throw new BlogapiException(HttpStatus.BAD_REQUEST, "Username or Password is incorrect");
+            throw new HandlingException(HttpStatus.BAD_REQUEST, "Username or Password is incorrect");
         }
     }
 
@@ -92,11 +92,11 @@ public class AuthenticationController {
         }
 
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-            throw new BlogapiException(HttpStatus.BAD_REQUEST, "Username is already taken");
+            throw new HandlingException(HttpStatus.BAD_REQUEST, "Username is already taken");
         }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            throw new BlogapiException(HttpStatus.BAD_REQUEST, "Email is already taken");
+            throw new HandlingException(HttpStatus.BAD_REQUEST, "Email is already taken");
         }
 
         String firstName = signUpRequest.getFirstName().toLowerCase();
