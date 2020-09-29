@@ -84,9 +84,7 @@
 			<artifactId>hibernate-jpamodelgen</artifactId>
 			<version>5.3.5.Final</version>
 		</dependency>
-
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -105,5 +103,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

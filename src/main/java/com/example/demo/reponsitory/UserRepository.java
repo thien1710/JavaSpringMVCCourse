@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     List<User> myCustomQuery(@Param("sort") String sort);
 
     @Query(value = "SELECT p FROM Project p, Customer c " +
-            "WHERE c.id = p.customer.id and c.cutomerName = ?1 and c.user.id = ?2")
+            "WHERE c.id = p.customer.id and c.customerName = ?1 and c.user.id = ?2")
     List<Project> myCustomQueryProject(String sort, long input2);
 
     User getUserById(Long id);

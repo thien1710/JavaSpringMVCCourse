@@ -3,7 +3,7 @@ package com.example.demo.payload.request;
 public class CustomerSearchCondition {
     private Long id;
 
-    private String cutomerName;
+    private String customerName;
 
     private String phone;
 
@@ -19,12 +19,12 @@ public class CustomerSearchCondition {
         this.id = id;
     }
 
-    public String getCutomerName() {
-        return cutomerName;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setCutomerName(String cutomerName) {
-        this.cutomerName = cutomerName;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public String getPhone() {

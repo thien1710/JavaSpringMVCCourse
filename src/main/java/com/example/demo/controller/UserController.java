@@ -137,6 +137,11 @@ public class UserController {
         return userService.requestPasswordReset(token, password);
     }
 
+    /**
+     * SEARCH
+     * @requestBody SearchRequest
+     * @return Collection<User>
+     */
     @GetMapping(path = "/search",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}

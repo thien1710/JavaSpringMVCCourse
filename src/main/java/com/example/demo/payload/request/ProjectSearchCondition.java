@@ -2,16 +2,18 @@ package com.example.demo.payload.request;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Date;
 
 public class ProjectSearchCondition {
     private Long id;
 
     private String projectName;
 
-    private Instant startTime;
+    private Timestamp startTime;
 
-    private Instant finishtTime;
+    private Timestamp finishtTime;
 
     private Long totalTime;
 
@@ -33,19 +35,19 @@ public class ProjectSearchCondition {
         this.projectName = projectName;
     }
 
-    public Instant getStartTime() {
+    public Timestamp getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Instant startTime) {
+    public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 
-    public Instant getFinishtTime() {
+    public Timestamp getFinishtTime() {
         return finishtTime;
     }
 
-    public void setFinishtTime(Instant finishtTime) {
+    public void setFinishtTime(Timestamp finishtTime) {
         this.finishtTime = finishtTime;
     }
 

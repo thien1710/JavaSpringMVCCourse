@@ -17,6 +17,7 @@ import com.example.demo.model.customer.Customer;
 import com.example.demo.model.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 
 @Entity
@@ -33,10 +34,10 @@ public class Project {
     private String projectName;
 
     @Column(name = "start_time")
-    private Instant startTime;
+    private Timestamp startTime;
 
     @Column(name = "finish_time")
-    private Instant finishtTime;
+    private Timestamp finishtTime;
 
     @Column(name = "total_time")
     private Long totalTime;
@@ -81,19 +82,19 @@ public class Project {
         this.projectName = projectName;
     }
 
-    public Instant getStartTime() {
+    public Timestamp getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Instant startTime) {
+    public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 
-    public Instant getFinishtTime() {
+    public Timestamp getFinishtTime() {
         return finishtTime;
     }
 
-    public void setFinishtTime(Instant finishtTime) {
+    public void setFinishtTime(Timestamp finishtTime) {
         this.finishtTime = finishtTime;
     }
 

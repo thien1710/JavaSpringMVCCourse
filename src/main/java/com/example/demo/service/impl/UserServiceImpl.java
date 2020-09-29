@@ -337,6 +337,12 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         UserSearchCondition userSearchCondition = searchRequest.getSearchCondition().getUserSearchCondition();
 
+        /**
+         * User condition
+         */
+        if (userSearchCondition == null) {
+            throw new AppException("userSearchCondition is mandatory");
+        }
         Predicate hasDefault = builder.isTrue(builder.literal(true));
         Predicate hasId = builder.equal(userRoot.get(User_.id), userSearchCondition.getId());
         Predicate hasIdHash = builder.equal(userRoot.get(User_.userIdHash), userSearchCondition.getUserIdHash());

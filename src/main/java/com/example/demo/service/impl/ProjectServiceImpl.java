@@ -130,15 +130,21 @@ public class ProjectServiceImpl implements ProjectService {
         /**
          * Customer condition
          */
+        if (customerSearchCondition == null) {
+            throw new AppException("customerSearchCondition is mandatory");
+        }
         Predicate hasCustomerId = builder.equal(customer.get(Customer_.id), customerSearchCondition.getId());
-        Predicate hasCustomerName = builder.equal(customer.get(Customer_.cutomerName), customerSearchCondition.getCutomerName());
+        Predicate hasCustomerName = builder.like(customer.get(Customer_.customerName), "%" + customerSearchCondition.getCustomerName() + "%");
         Predicate hasCustomerPhone = builder.equal(customer.get(Customer_.phone), customerSearchCondition.getPhone());
         Predicate hasCustomerEmail = builder.equal(customer.get(Customer_.email), customerSearchCondition.getEmail());
-        Predicate hasCustomerAddress = builder.equal(customer.get(Customer_.address), customerSearchCondition.getAddress());
+        Predicate hasCustomerAddress = builder.like(customer.get(Customer_.address), "%" + customerSearchCondition.getAddress() + "%");
 
         /**
          * User condition
          */
+        if (userSearchCondition == null) {
+            throw new AppException("userSearchCondition is mandatory");
+        }
         Predicate hasId = builder.equal(user.get(User_.id), userSearchCondition.getId());
         Predicate hasIdHash = builder.equal(user.get(User_.userIdHash), userSearchCondition.getUserIdHash());
         Predicate hasFirstname = builder.like(user.get(User_.firstName), "%" + userSearchCondition.getFirstName() + "%");
@@ -152,16 +158,15 @@ public class ProjectServiceImpl implements ProjectService {
         /**
          * Project condition
          */
+        if (projectSearchCondition == null) {
+            throw new AppException("userSearchCondition is mandatory");
+        }
         Predicate hasProjectId = builder.equal(project.get(Project_.id), projectSearchCondition.getId());
         Predicate hasProjectName = builder.like(project.get(Project_.projectName), "%" + projectSearchCondition.getProjectName() + "%");
         Predicate hasStartTimeGt = builder.greaterThanOrEqualTo(project.get(Project_.startTime), projectSearchCondition.getStartTime());
-        Predicate hasStartTimeLt = builder.lessThan(project.get(Project_.startTime), projectSearchCondition.getStartTime());
         Predicate hasFinishTimeGt = builder.greaterThanOrEqualTo(project.get(Project_.finishtTime), projectSearchCondition.getFinishtTime());
-        Predicate hasFinishTimeLt = builder.lessThan(project.get(Project_.finishtTime), projectSearchCondition.getFinishtTime());
         Predicate hasTotalTimeGt = builder.greaterThanOrEqualTo(project.get(Project_.totalTime), projectSearchCondition.getTotalTime());
-        Predicate hasTotalTimeLt = builder.lessThan(project.get(Project_.totalTime), projectSearchCondition.getTotalTime());
         Predicate hasBudgetGt = builder.greaterThanOrEqualTo(project.get(Project_.budget), projectSearchCondition.getBudget());
-        Predicate hasBudgetLt = builder.lessThan(project.get(Project_.budget), projectSearchCondition.getBudget());
 
         Predicate condition = builder.and(hasDefault);
 
@@ -215,7 +220,7 @@ public class ProjectServiceImpl implements ProjectService {
             condition = builder.and(condition, hasCustomerAddress);
         }
 
-        if (customerSearchCondition.getCutomerName() != null) {
+        if (customerSearchCondition.getCustomerName() != null) {
             condition = builder.and(condition, hasCustomerName);
         }
 
@@ -227,6 +232,7 @@ public class ProjectServiceImpl implements ProjectService {
             condition = builder.and(condition, hasCustomerPhone);
         }
 
+        /**
         /**
          * Project
          */
@@ -240,22 +246,18 @@ public class ProjectServiceImpl implements ProjectService {
 
         if (projectSearchCondition.getStartTime() != null) {
             condition = builder.and(condition, hasStartTimeGt);
-            condition = builder.and(condition, hasStartTimeLt);
         }
 
         if (projectSearchCondition.getFinishtTime() != null) {
             condition = builder.and(condition, hasFinishTimeGt);
-            condition = builder.and(condition, hasFinishTimeLt);
         }
 
         if (projectSearchCondition.getTotalTime() != null) {
             condition = builder.and(condition, hasTotalTimeGt);
-            condition = builder.and(condition, hasTotalTimeLt);
         }
 
         if (projectSearchCondition.getBudget() != null) {
             condition = builder.and(condition, hasBudgetGt);
-            condition = builder.and(condition, hasBudgetLt);
         }
 
         query.select(project).where(condition);

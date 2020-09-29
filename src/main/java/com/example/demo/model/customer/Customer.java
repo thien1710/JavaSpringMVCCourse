@@ -35,7 +35,7 @@ public class Customer {
     private Long id;
 
     @Column(name = "cutomer_name")
-    private String cutomerName;
+    private String customerName;
 
     @Column(name = "phone")
     private String phone;
@@ -77,12 +77,12 @@ public class Customer {
         this.user = user;
     }
 
-    public String getCutomerName() {
-        return cutomerName;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setCutomerName(String cutomerName) {
-        this.cutomerName = cutomerName;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public String getPhone() {

@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.config.Configs;
 import com.example.demo.config.ErrorMessages;
+import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.BlogapiException;
 import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.exceptions.UnauthorizedException;
@@ -51,14 +52,14 @@ public class CustomerServiceImpl implements CustomerService {
         if (user == null) throw new UsernameNotFoundException(currentUserUsername + " not found");
 
         Customer customer = new Customer();
-        customer.setCutomerName(customerRequest.getCustomerName());
+        customer.setCustomerName(customerRequest.getCustomerName());
         customer.setUser(user);
 
         Customer newCustomer = customerRepository.save(customer);
 
         CustomerResponse customerResponse = new CustomerResponse();
 
-        customerResponse.setCustomerName(newCustomer.getCutomerName());
+        customerResponse.setCustomerName(newCustomer.getCustomerName());
 
         return customerResponse;
     }
@@ -72,7 +73,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (customer.getUser().getUsername().equals(authentication.getName())
                 || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))
         ) {
-            customer.setCutomerName(customerRequest.getCustomerName());
+            customer.setCustomerName(customerRequest.getCustomerName());
             Customer updatedCustomer = customerRepository.save(customer);
             return updatedCustomer;
         }
@@ -124,15 +125,21 @@ public class CustomerServiceImpl implements CustomerService {
         /**
          * Customer condition
          */
-        Predicate hasCustomerId = builder.equal(customerRoot.get(Customer_.id), customerSearchCondition.getId());
-        Predicate hasCustomerName = builder.equal(customerRoot.get(Customer_.cutomerName), customerSearchCondition.getCutomerName());
+        if (customerSearchCondition == null) {
+            throw new AppException("customerSearchCondition is mandatory");
+        }
+        Predicate hasCustomerId = builder.greaterThanOrEqualTo(customerRoot.get(Customer_.id), customerSearchCondition.getId());
+        Predicate hasCustomerName = builder.like(customerRoot.get(Customer_.customerName), "%" + customerSearchCondition.getCustomerName() + "%");
         Predicate hasCustomerPhone = builder.equal(customerRoot.get(Customer_.phone), customerSearchCondition.getPhone());
         Predicate hasCustomerEmail = builder.equal(customerRoot.get(Customer_.email), customerSearchCondition.getEmail());
-        Predicate hasCustomerAddress = builder.equal(customerRoot.get(Customer_.address), customerSearchCondition.getAddress());
+        Predicate hasCustomerAddress = builder.like(customerRoot.get(Customer_.address), "%" + customerSearchCondition.getAddress() + "%");
 
         /**
          * User condition
          */
+        if (userSearchCondition == null) {
+            throw new AppException("userSearchCondition is mandatory");
+        }
         Predicate hasId = builder.equal(customerUserJoin.get(User_.id), userSearchCondition.getId());
         Predicate hasIdHash = builder.equal(customerUserJoin.get(User_.userIdHash), userSearchCondition.getUserIdHash());
         Predicate hasFirstname = builder.like(customerUserJoin.get(User_.firstName), "%" + userSearchCondition.getFirstName() + "%");
@@ -189,7 +196,7 @@ public class CustomerServiceImpl implements CustomerService {
             condition = builder.and(condition, hasCustomerAddress);
         }
 
-        if (customerSearchCondition.getCutomerName() != null) {
+        if (customerSearchCondition.getCustomerName() != null) {
             condition = builder.and(condition, hasCustomerName);
         }
 
