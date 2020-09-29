@@ -1,7 +1,7 @@
 package com.example.demo.exceptions;
 
-import com.example.demo.shared.ErrorDetails;
-import com.example.demo.shared.ErrorMessages;
+import com.example.demo.utils.ErrorMessages;
+import com.example.demo.utils.ErrorDetails;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

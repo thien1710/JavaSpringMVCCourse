@@ -2,11 +2,9 @@ package com.example.demo.controller;
 
 import javax.validation.Valid;
 
-import com.example.demo.config.Configs;
-import com.example.demo.config.Constants;
+import com.example.demo.utils.Configs;
+import com.example.demo.utils.Constants;
 import com.example.demo.exceptions.AppException;
-import com.example.demo.model.customer.Customer;
-import com.example.demo.model.project.Project;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.request.*;
 import com.example.demo.payload.response.ApiResponse;
@@ -20,11 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController

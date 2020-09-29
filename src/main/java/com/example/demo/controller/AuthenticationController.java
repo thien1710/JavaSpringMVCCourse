@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.config.Configs;
-import com.example.demo.config.Constants;
+import com.example.demo.utils.Configs;
+import com.example.demo.utils.Constants;
 import com.example.demo.config.TokenProvider;
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.HandlingException;
@@ -15,7 +15,7 @@ import com.example.demo.reponsitory.RoleRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.security.AuthToken;
 import com.example.demo.service.UserService;
-import com.example.demo.shared.Utils;
+import com.example.demo.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

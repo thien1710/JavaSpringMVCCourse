@@ -1,16 +1,9 @@
-package com.example.demo.shared;
+package com.example.demo.utils;
 
-import com.example.demo.config.Constants;
-import com.example.demo.security.SecurityConstants;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Controller;
 
 import java.security.SecureRandom;
-import java.util.Date;
 import java.util.Random;
-
-import static com.example.demo.security.SecurityConstants.*;
 
 @Controller
 public class Utils {

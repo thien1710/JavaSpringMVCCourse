@@ -1,6 +1,6 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.config.ErrorMessages;
+import com.example.demo.utils.ErrorMessages;
 import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
 import com.example.demo.model.customer.Customer_;
@@ -16,7 +16,7 @@ import com.example.demo.payload.response.CustomerResponse;
 import com.example.demo.reponsitory.CustomerRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.service.CustomerService;
-import com.example.demo.shared.EnumConstants;
+import com.example.demo.utils.EnumConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse addCustomer(CustomerRequest customerRequest, String currentUserUsername) {
         User user = userRepository.findByUsername(currentUserUsername);
-        if (user == null) throw new UsernameNotFoundException(currentUserUsername + " not found");
+        if (user == null) throw new UsernameNotFoundException(currentUserUsername + ErrorMessages.NOT_FOUND.getErrorMessage());
 
         Customer customer = new Customer();
         customer.setCustomerName(customerRequest.getCustomerName());
@@ -63,7 +63,8 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer updateCustomer(Long id, CustomerRequest customerRequest, Authentication authentication) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                        EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage() + EnumConstants.ID.getEnumConstants() + " = " + id));
+                        EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
+                                + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + id));
 
         if (customer.getUser().getUsername().equals(authentication.getName())
                 || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))
@@ -81,7 +82,8 @@ public class CustomerServiceImpl implements CustomerService {
     public ApiResponse deleteCustomer(Long id, Authentication authentication) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                        EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage() + EnumConstants.ID.getEnumConstants() + " = " + id));
+                        EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage() +
+                                EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + id));
         if (customer.getUser().getUsername().equals(authentication.getName())
                 || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))) {
             customerRepository.deleteById(id);
@@ -107,6 +109,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Collection<Customer> searchCustomers(SearchRequest searchRequest) {
+
+        if (searchRequest == null) {
+            throw new HandlingException(HttpStatus.NOT_FOUND,
+                    EnumConstants.SEARCH_REQUEST.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage());
+        }
+
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Customer> query = builder.createQuery(Customer.class);
         Root<Customer> customerRoot = query.from(Customer.class);
@@ -135,7 +143,7 @@ public class CustomerServiceImpl implements CustomerService {
          */
         if (userSearchCondition == null) {
             throw new HandlingException(HttpStatus.NOT_FOUND,
-                    EnumConstants.CUSTOMER_CONDITION.getEnumConstants() +ErrorMessages.IS_MANDATORY.getErrorMessage());
+                    EnumConstants.CUSTOMER_CONDITION.getEnumConstants() + ErrorMessages.IS_MANDATORY.getErrorMessage());
         }
         Predicate hasId = builder.equal(customerUserJoin.get(User_.id), userSearchCondition.getId());
         Predicate hasIdHash = builder.equal(customerUserJoin.get(User_.userIdHash), userSearchCondition.getUserIdHash());

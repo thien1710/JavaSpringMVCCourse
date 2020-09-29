@@ -2,10 +2,8 @@ package com.example.demo.controller;
 
 import javax.validation.Valid;
 
-import com.example.demo.config.Configs;
-import com.example.demo.model.customer.Customer;
+import com.example.demo.utils.Configs;
 import com.example.demo.model.project.Project;
-import com.example.demo.model.user.User;
 import com.example.demo.payload.request.ProjectRequest;
 import com.example.demo.payload.request.SearchRequest;
 import com.example.demo.payload.response.ApiResponse;

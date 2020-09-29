@@ -1,8 +1,6 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.config.Configs;
-import com.example.demo.config.ErrorMessages;
-import com.example.demo.exceptions.AppException;
+import com.example.demo.utils.ErrorMessages;
 import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
 import com.example.demo.model.customer.Customer_;
@@ -13,11 +11,12 @@ import com.example.demo.model.user.User;
 import com.example.demo.model.user.User_;
 import com.example.demo.payload.request.*;
 import com.example.demo.payload.response.ApiResponse;
+import com.example.demo.payload.response.ResponseOperationName;
 import com.example.demo.reponsitory.CustomerRepository;
 import com.example.demo.reponsitory.ProjectRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.service.ProjectService;
-import com.example.demo.shared.EnumConstants;
+import com.example.demo.utils.EnumConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -45,9 +44,11 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Project addProject(ProjectRequest projectRequest, Long customerId, Authentication authentication) {
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new AppException(Configs.AppConstant.CUSTOMER + " " + Configs.AppConstant.ID + " " + customerId + "not found"));
+                .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+                        EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
+                                + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + customerId));
         User user = userRepository.findByUsername(authentication.getName());
-        if (user == null) throw new UsernameNotFoundException(authentication.getName() + " not found");
+        if (user == null) throw new UsernameNotFoundException(authentication.getName() + ErrorMessages.NOT_FOUND.getErrorMessage());
         Project project = new Project();
         project.setUser(user);
         project.setCustomer(customer);
@@ -62,13 +63,16 @@ public class ProjectServiceImpl implements ProjectService {
     public Project updateProject(Long customerId, Long id, ProjectRequest projectRequest, Authentication authentication) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                        String.format("%s not found with %s: '%s'", Configs.AppConstant.CUSTOMER, Configs.AppConstant.ID, customerId)));
+                        EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
+                                + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + customerId));
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                        String.format("%s not found with %s: '%s'", Configs.AppConstant.PROJECT, Configs.AppConstant.ID, id)));
+                        EnumConstants.PROJECT.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
+                                + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + id));
 
         if (!project.getCustomer().getId().equals(customer.getId())){
-            throw new HandlingException(HttpStatus.BAD_REQUEST, EnumConstants.PROJECT.getEnumConstants() + ErrorMessages.DOES_NOT_BELONG_TO + EnumConstants.CUSTOMER.getEnumConstants());
+            throw new HandlingException(HttpStatus.BAD_REQUEST, EnumConstants.PROJECT.getEnumConstants() +
+                    ErrorMessages.DOES_NOT_BELONG_TO + EnumConstants.CUSTOMER.getEnumConstants());
         }
 
         if (project.getUser().getUsername().equals(authentication.getName())
@@ -80,31 +84,38 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         throw new HandlingException(HttpStatus.UNAUTHORIZED,
-                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + EnumConstants.UPDATE.getEnumConstants() + EnumConstants.PROJECT.getEnumConstants());
+                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() +
+                        EnumConstants.UPDATE.getEnumConstants() + EnumConstants.PROJECT.getEnumConstants());
     }
 
     @Override
     public ApiResponse deleteProject(Long customerId, Long id, Authentication authentication) {
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                        String.format("%s not found with %s: '%s'", Configs.AppConstant.CUSTOMER, Configs.AppConstant.ID, id)));
+                        EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
+                                + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + customerId));
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                        String.format("%s not found with %s: '%s'", Configs.AppConstant.PROJECT, Configs.AppConstant.ID, id)));
+                        EnumConstants.PROJECT.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
+                                + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + id));
+
 
         if (!project.getCustomer().getId().equals(customer.getId())){
-            throw new HandlingException(HttpStatus.BAD_REQUEST, EnumConstants.PROJECT.getEnumConstants() + ErrorMessages.DOES_NOT_BELONG_TO + EnumConstants.CUSTOMER.getEnumConstants());
+            throw new HandlingException(HttpStatus.BAD_REQUEST, EnumConstants.PROJECT.getEnumConstants() +
+                    ErrorMessages.DOES_NOT_BELONG_TO + EnumConstants.CUSTOMER.getEnumConstants());
         }
 
         if (project.getUser().getUsername().equals(authentication.getName())
                 || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))
         ) {
             projectRepository.deleteById(project.getId());
-            return new ApiResponse(Boolean.TRUE, "You successfully deleted comment");
+            return new ApiResponse(Boolean.TRUE, EnumConstants.DELETE.getEnumConstants() +
+                    EnumConstants.PROJECT.getEnumConstants() + ResponseOperationName.SUCCESSFUL);
         }
 
         throw new HandlingException(HttpStatus.UNAUTHORIZED,
-                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() + EnumConstants.UPDATE.getEnumConstants() + EnumConstants.PROJECT.getEnumConstants());
+                ErrorMessages.YOU_DON_T_HAVE_PERMISSION_TO.getErrorMessage() +
+                        EnumConstants.UPDATE.getEnumConstants() + EnumConstants.PROJECT.getEnumConstants());
     }
 
     @PersistenceContext
@@ -112,6 +123,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Collection<Project> searchProject(SearchRequest searchRequest) {
+
+        if (searchRequest == null) {
+            throw new HandlingException(HttpStatus.NOT_FOUND,
+                    EnumConstants.SEARCH_REQUEST.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage());
+        }
+
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Project> query = builder.createQuery(Project.class);
 
@@ -136,7 +153,8 @@ public class ProjectServiceImpl implements ProjectService {
          * Customer condition
          */
         if (customerSearchCondition == null) {
-            throw new AppException("customerSearchCondition is mandatory");
+            throw new HandlingException(HttpStatus.NOT_FOUND,
+                    EnumConstants.USER_CONDITION.getEnumConstants() +ErrorMessages.IS_MANDATORY.getErrorMessage());
         }
         Predicate hasCustomerId = builder.equal(customer.get(Customer_.id), customerSearchCondition.getId());
         Predicate hasCustomerName = builder.like(customer.get(Customer_.customerName), "%" + customerSearchCondition.getCustomerName() + "%");
@@ -148,7 +166,8 @@ public class ProjectServiceImpl implements ProjectService {
          * User condition
          */
         if (userSearchCondition == null) {
-            throw new AppException("userSearchCondition is mandatory");
+            throw new HandlingException(HttpStatus.NOT_FOUND,
+                    EnumConstants.CUSTOMER_CONDITION.getEnumConstants() + ErrorMessages.IS_MANDATORY.getErrorMessage());
         }
         Predicate hasId = builder.equal(user.get(User_.id), userSearchCondition.getId());
         Predicate hasIdHash = builder.equal(user.get(User_.userIdHash), userSearchCondition.getUserIdHash());
@@ -164,7 +183,8 @@ public class ProjectServiceImpl implements ProjectService {
          * Project condition
          */
         if (projectSearchCondition == null) {
-            throw new AppException("userSearchCondition is mandatory");
+            throw new HandlingException(HttpStatus.NOT_FOUND,
+                    EnumConstants.PROJECT_CONDITION.getEnumConstants() + ErrorMessages.IS_MANDATORY.getErrorMessage());
         }
         Predicate hasProjectId = builder.equal(project.get(Project_.id), projectSearchCondition.getId());
         Predicate hasProjectName = builder.like(project.get(Project_.projectName), "%" + projectSearchCondition.getProjectName() + "%");
