@@ -61,6 +61,11 @@ public class AuthenticationController {
     @Autowired
     Utils utils;
 
+    @GetMapping()
+    public String hello() {
+        return "Hello World from Tomcat";
+    }
+
     //    @RequestMapping(value = "/generate-token", method = RequestMethod.POST)
     @PostMapping("/signin")
     public ResponseEntity<?> register(@Valid @RequestBody UserLoginRequestModel loginUser) throws AuthenticationException {

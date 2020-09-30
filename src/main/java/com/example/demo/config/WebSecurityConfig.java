@@ -52,6 +52,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().
                 authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/rest/v1/entities/**").permitAll()
+
+//                TEST
+                .antMatchers(HttpMethod.GET, Configs.URL.AUTH.AUTHS + "/**").permitAll()
+
                 .antMatchers(HttpMethod.POST, Configs.URL.AUTH.AUTHS + "/**").permitAll()
                 .antMatchers(HttpMethod.POST, Configs.URL.USER.USERS + Configs.URL.USER.PASSWORD_FORGOT_REQUEST_URL).permitAll()
                 .antMatchers(HttpMethod.PUT, Configs.URL.USER.USERS + Configs.URL.USER.PASSWORD_RESET_REQUEST_URL + "/test").permitAll()
