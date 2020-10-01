@@ -96,10 +96,11 @@ public class UserController {
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
     }
 
-    @PostMapping(path = Configs.URL.USER.PASSWORD_FORGOT_REQUEST_URL,
+    @PostMapping(path = Configs.URL.USER.FORGOT_PASSWORD + Configs.URL.USER.FORGOT_PASSWORD_REQUEST,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ForgotPasswordResponse requestForget(@RequestBody PasswordResetRequestModel passwordResetRequestModel) {
         ForgotPasswordResponse returnValue = new ForgotPasswordResponse();
 
@@ -118,10 +119,11 @@ public class UserController {
         return returnValue;
     }
 
-    @PutMapping(path = Configs.URL.USER.PASSWORD_RESET_REQUEST_URL + "/test",
+    @PutMapping(path = Configs.URL.USER.FORGOT_PASSWORD + Configs.URL.USER.FORGOT_PASSWORD_RESET,
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public String requestReset(@RequestParam String token,
                                @RequestParam String password) {
         Boolean passwordMatches = Configs.isValidTextRegrex(password, Constants.REGREX.PASSWORD);

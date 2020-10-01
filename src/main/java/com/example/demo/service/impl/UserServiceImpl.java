@@ -319,7 +319,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                     EnumConstants.CUSTOMER_CONDITION.getEnumConstants() + ErrorMessages.IS_MANDATORY.getErrorMessage());
         }
         Predicate hasDefault = builder.isTrue(builder.literal(true));
-        Predicate hasId = builder.greaterThanOrEqualTo(userRoot.get(User_.id), userSearchCondition.getId());
+        Predicate hasId = builder.equal(userRoot.get(User_.id), userSearchCondition.getId());
         Predicate hasIdHash = builder.equal(userRoot.get(User_.userIdHash), userSearchCondition.getUserIdHash());
         Predicate hasFirstname = builder.like(userRoot.get(User_.firstName), "%" + userSearchCondition.getFirstName() + "%");
         Predicate hasLastname = builder.like(userRoot.get(User_.lastName), "%" + userSearchCondition.getLastName() + "%");

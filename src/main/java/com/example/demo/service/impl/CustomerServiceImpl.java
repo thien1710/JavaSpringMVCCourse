@@ -132,7 +132,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new HandlingException(HttpStatus.NOT_FOUND,
                     EnumConstants.USER_CONDITION.getEnumConstants() +ErrorMessages.IS_MANDATORY.getErrorMessage());
         }
-        Predicate hasCustomerId = builder.greaterThanOrEqualTo(customerRoot.get(Customer_.id), customerSearchCondition.getId());
+        Predicate hasCustomerId = builder.equal(customerRoot.get(Customer_.id), customerSearchCondition.getId());
         Predicate hasCustomerName = builder.like(customerRoot.get(Customer_.customerName), "%" + customerSearchCondition.getCustomerName() + "%");
         Predicate hasCustomerPhone = builder.equal(customerRoot.get(Customer_.phone), customerSearchCondition.getPhone());
         Predicate hasCustomerEmail = builder.equal(customerRoot.get(Customer_.email), customerSearchCondition.getEmail());

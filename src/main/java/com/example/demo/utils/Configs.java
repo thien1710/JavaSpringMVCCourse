@@ -8,8 +8,9 @@ public class Configs {
         interface USER {
             String SIGN_IN = "/api/v1/users/login";
             String USERS = "/api/v1/users";
-            String PASSWORD_FORGOT_REQUEST_URL = "/password-forgot-request";
-            String PASSWORD_RESET_REQUEST_URL = "/password-reset-request";
+            String FORGOT_PASSWORD = "/forgot-password";
+            String FORGOT_PASSWORD_REQUEST = "/request";
+            String FORGOT_PASSWORD_RESET = "/reset";
         }
 
         interface PROJECT {
