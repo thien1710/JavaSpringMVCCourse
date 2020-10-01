@@ -66,9 +66,7 @@ The app will start running at <http://localhost:8090>
 
 The app defines following CRUD APIs.
 
-##
-
-## 1. Users
+## <a id="user">1. Users</a>
 
 Test them using postman or any other rest client.
 
