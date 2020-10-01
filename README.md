@@ -72,7 +72,7 @@ Test them using postman or any other rest client.
 
 ## Sample Valid JSON Request Bodys
 
-### 1. Login
+### <a id="login">1. Login</a>
 
 **URL** : http://localhost:8090/api/v1/auth/signin/
 
@@ -106,7 +106,7 @@ FAILD :
 }
 ```
 
-### 2. Signup
+### <a id="signup">2. Signup</a>
 
 **URL** : http://localhost:8090/api/v1/auth/signup
 
@@ -146,7 +146,7 @@ FAILD :
 }
 ```
 
-### 3. Add User
+### <a id="addUser">3. Add User</a>
 
 **URL** : http://localhost:8090/api/v1/users
 
@@ -189,7 +189,7 @@ FAILD :
 }
 ```
 
-### 4. Get Current User
+### 4. <a id="getCurrentUser">Get Current User</a>
 
 **URL** : http://localhost:8090/api/v1/users/me
 
@@ -250,7 +250,7 @@ FAILD :
 
 
 
-### 5. Forget Password
+### 5. <a id="forgetPassword">Forget Password</a>
 
 **URL** : http://localhost:8090/api/v1/users/password-forgot-request
 
@@ -287,7 +287,7 @@ FAILD :
 }
 ```
 
-### 6. Reset Password
+### <a id="resetPassword">6. Reset Password</a>
 
 **URL** : http://localhost:8090/api/v1/users/forgot-password/reset
 
@@ -315,7 +315,7 @@ FAILD :
 }
 ```
 
-### 7.  Update user 
+### <a id="deleteUser">7.  Update user</a>
 
 **URL** : http://localhost:8090/api/v1/users/{username}
 
@@ -377,7 +377,7 @@ FAILD :
 }
 ```
 
-### 8. Delete User
+### 8. <a id="giveAdmin">Delete User</a>
 
 **URL** : http://localhost:8090/api/v1/users/{UserId}
 
@@ -410,7 +410,7 @@ FAILD :
 }
 ```
 
-### 9. Give Admin
+### <a id="giveAdmin">9. Give Admin</a>
 
 **URL** : http://localhost:8090/api/v1/users/{UserId}/giveAdmin
 
@@ -441,7 +441,7 @@ FAILD :
 }
 ```
 
-### 10. Take Admin
+### <a id="takeAdmin">10. Take Admin</a>
 
 **URL** : http://localhost:8090/api/v1/users/{UserId}/giveAdmin
 
@@ -472,7 +472,7 @@ FAILD :
 }
 ```
 
-### 11. Search User
+### <a id="searchUser">11. Search User</a>
 
 **URL** : http://localhost:8090/api/v1/users/search
 
@@ -536,13 +536,13 @@ FAILD :
 
 
 
-## 2. Customer
+## <a id="customer">2. Customer</a>
 
 Test them using postman or any other rest client.
 
 ## Sample Valid JSON Request Bodys
 
-### 1. Add Customer
+### <a id="addCustomer">1. Add Customer</a>
 
 **URL** : http://localhost:8090/api/v1/customers
 
@@ -577,7 +577,7 @@ FAILD :
 }
 ```
 
-### 2. Update Customer
+### <a id="updateCustomer">2. Update Customer</a>
 
 **URL** : http://localhost:8090/api/v1/customers/{CustomerId}
 
@@ -618,7 +618,7 @@ FAILD :
 }
 ```
 
-### 3. Delete Customer
+### <a id="deleteCustomer">3. Delete Customer</a>
 
 **URL** : http://localhost:8090/api/v1/customers/{CustomerId}
 
@@ -649,7 +649,7 @@ FAILD :
 }
 ```
 
-### 4. Search Customer
+### <a id="searchCustomer">4. Search Customer</a>
 
 **URL** : http://localhost:8090/api/v1/customers/search
 
@@ -701,13 +701,13 @@ FAILD :
 }
 ```
 
-## 3. Project
+## <a id="project">3. Project</a>
 
 Test them using postman or any other rest client.
 
 ## Sample Valid JSON Request Bodys
 
-### 1. Add Project
+### <a id="addProject">1. Add Project</a>
 
 **URL** : http://localhost:8090/api/v1/customers/{CustomerId/projects
 
@@ -749,7 +749,7 @@ FAILD :
 }
 ```
 
-### 2. Update Project
+### 2. <a id="updateProject">Update Project</a>
 
 **URL** : http://localhost:8090/api/v1/customers/{CustomerId}/projects/{ProjectId}
 
@@ -791,7 +791,7 @@ FAILD :
 }
 ```
 
-### 3. Delete Project
+### 3. <a id="deleteProject">Delete Project</a>
 
 **URL** : http://localhost:8090/api/v1/customers/{CustomerId}/projects/{ProjectId}
 
@@ -822,7 +822,7 @@ FAILD :
 }
 ```
 
-### 4. Search Project
+### 4. <a id="searchProject">Search Project</a>
 
 **URL** : http://localhost:8090/api/v1/customers/search
 
