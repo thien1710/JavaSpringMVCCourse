@@ -92,6 +92,34 @@ Test them using postman or any other rest client.
 }
 ```
 
+```json
+{
+	"object" : "user",
+	"item" : 
+	{
+		"firstName": "User1",
+		"lastName": "user1",
+		"username": "user1",
+		"password": "user1",
+		"email": user1@gmail.com
+		…
+	}
+}
+{
+    "searchCondition": {
+        "userSearchCondition": {
+            "username": "leanne"
+    
+        },
+        "customerSearchCondition": {
+            "customerName":"a",
+            "id": 4
+        }
+    }
+}
+
+```
+
 ##### <a id="(getUserById) ">Get user by id (ADMIN or USER) -> /rest/v1/entities/users/{id} -> Take token from login request and add to the header authorization</a>
 
 ##### <a id="(getCurrentUser) ">Get current user (USER) -> /rest/v1/entities/users/me -> Take token from login request and add to the header authorization</a>
