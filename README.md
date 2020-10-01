@@ -32,11 +32,41 @@ create database test
 ```bash
 
 ```
-The app will start running at <http://localhost:8080>
+The app will start running at <http://localhost:8090>
+
+## All APIs URL
+
+| Index | Name | View |
+| ------ | ------ | ------ | 
+| 1 | User | [JSON](#user) |
+| 1.1 | Login | [JSON](#login) |
+| 1.2 | Signup | [JSON](#signup) |
+| 1.3 | Add User | [JSON](#addUser) |
+| 1.4 | Get Current User | [JSON](#getCurrentUser) |
+| 1.5 | Forgot Password | [JSON](#forgetPassword) |
+| 1.6 | Reset Password | [JSON](#resetPassword) |
+| 1.7 | Update user | [JSON](#updateUser) |
+| 1.8 | Delete User | [JSON](#deleteUser) |
+| 1.9 | Give Admin | [JSON](#giveAdmin) |
+| 1.10 | Take Admin | [JSON](#takeAdmin) |
+| 1.11 | Search User | [JSON](#searchUser) |
+| 2 | Customer | [JSON](#customer) |
+| 2.1 | Add Customer | [JSON](#addCustomer) |
+| 2.2 | Update Customer | [JSON](#updateCustomer) |
+| 2.3 | Delete Customer | [JSON](#deleteCustomer) |
+| 2.4 | Search Customer | [JSON](#searchCustomer) |
+| 3 | Project | [JSON](#project) |
+| 3.1 | Add Project | [JSON](#addProject) |
+| 3.2 | Update Project | [JSON](#updateProject) |
+| 3.4 | Delete Project | [JSON](#deleteProject) |
+| 3.4 | Search Project | [JSON](#searchProject) |
+
 
 ## Explore Rest APIs
 
 The app defines following CRUD APIs.
+
+##
 
 ## 1. Users
 
@@ -287,7 +317,7 @@ FAILD :
 }
 ```
 
-### 7.  User
+### 7.  Update user 
 
 **URL** : http://localhost:8090/api/v1/users/{username}
 
