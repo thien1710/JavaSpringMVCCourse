@@ -289,7 +289,7 @@ FAILD :
 
 ### 7.  User
 
-**URL** : http://localhost:8090/api/v1/users/leanne13
+**URL** : http://localhost:8090/api/v1/users/{username}
 
 **Method :** PUT
 
@@ -351,7 +351,7 @@ FAILD :
 
 ### 8. Delete User
 
-**URL** : http://localhost:8090/api/v1/users/me
+**URL** : http://localhost:8090/api/v1/users/{UserId}
 
 **Method :** DELETE
 
@@ -382,9 +382,9 @@ FAILD :
 }
 ```
 
-### 8. Give Admin
+### 9. Give Admin
 
-**URL** : http://localhost:8090/api/v1/users/9900/giveAdmin
+**URL** : http://localhost:8090/api/v1/users/{UserId}/giveAdmin
 
 **Method :** PUT
 
@@ -413,9 +413,9 @@ FAILD :
 }
 ```
 
-### 9. Take Admin
+### 10. Take Admin
 
-**URL** : http://localhost:8090/api/v1/users/9900/giveAdmin
+**URL** : http://localhost:8090/api/v1/users/{UserId}/giveAdmin
 
 **Method :** PUT
 
@@ -444,7 +444,7 @@ FAILD :
 }
 ```
 
-### 10. Search User
+### 11. Search User
 
 **URL** : http://localhost:8090/api/v1/users/search
 
@@ -502,9 +502,358 @@ FAILD :
 ```
 
 
-enter code here
 
 
 
 
-enter code here
+
+
+## 2. Customer
+
+Test them using postman or any other rest client.
+
+## Sample Valid JSON Request Bodys
+
+### 1. Add Customer
+
+**URL** : http://localhost:8090/api/v1/customers
+
+**Method :** POST
+
+**Description :** Add Customer
+
+**Header :** Baearer (token User)
+
+**Parameter :**
+
+**Request Body :**
+```json
+{
+    "customerName":"project name"
+}
+```
+
+**Response Body :**
+```json
+{
+    "customerName":"project name"
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 2. Update Customer
+
+**URL** : http://localhost:8090/api/v1/customers/{CustomerId}
+
+**Method :** PUT
+
+**Description :** Update Customer
+
+**Header :** Bearer (token User)
+
+**Parameter :**
+
+**Request Body :**
+```json
+{
+    "customerName":"updated project name"
+}
+```
+
+**Response Body :**
+```json
+{
+    "id": 9811,
+    "customerName": "updated project name",
+    "phone": null,
+    "email": null,
+    "address": null,
+    "filed": null,
+    "note": null
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 3. Delete Customer
+
+**URL** : http://localhost:8090/api/v1/customers/{CustomerId}
+
+**Method :** DELETE
+
+**Description :** Delete Customer
+
+**Header :** Bearer {token User}
+
+**Parameter :**
+
+**Request Body :**
+
+**Response Body :**
+```json
+{
+    "success": true,
+    "message": "You successfully deleted post"
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 4. Search Customer
+
+**URL** : http://localhost:8090/api/v1/customers/search
+
+**Method :** GET
+
+**Description :** Get Current User
+
+**Header :** Bearer {token}
+
+**Parameter :**
+
+**Request Body :**
+```json
+{
+    "searchCondition": {
+        "userSearchCondition": {
+            "username": "leanne"
+    
+        },
+        "customerSearchCondition": {
+            "customerName":"a",
+            "id": 4
+        }
+    }
+}
+```
+
+**Response Body :**
+```json
+[
+    {
+        "id": 4,
+        "customerName": "April",
+        "phone": null,
+        "email": null,
+        "address": null,
+        "filed": null,
+        "note": null
+    }
+]
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+## 3. Project
+
+Test them using postman or any other rest client.
+
+## Sample Valid JSON Request Bodys
+
+### 1. Add Project
+
+**URL** : http://localhost:8090/api/v1/customers/{CustomerId/projects
+
+**Method :** POST
+
+**Description :** Add Project
+
+**Header :** Baearer (token User)
+
+**Parameter :**
+
+**Request Body :**
+```json
+{
+    "projectName":"this is exactly project name 3"
+}
+```
+
+**Response Body :**
+```json
+{
+    "id": 9811,
+    "projectName": "this is exactly project name 3",
+    "startTime": null,
+    "finishtTime": null,
+    "totalTime": null,
+    "budget": null,
+    "status": null,
+    "note": null
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 2. Update Project
+
+**URL** : http://localhost:8090/api/v1/customers/{CustomerId}/projects/{ProjectId}
+
+**Method :** PUT
+
+**Description :** Update Project
+
+**Header :** Bearer (token)
+
+**Parameter :**
+
+**Request Body :**
+```json
+{
+    "projectName": "ypdated this is exactly updated project name"
+}
+```
+
+**Response Body :**
+```json
+{
+    "id": 1,
+    "projectName": "ypdated this is exactly updated project name",
+    "startTime": "2020-08-16T17:00:00.000+00:00",
+    "finishtTime": "2020-10-10T16:59:59.000+00:00",
+    "totalTime": 150,
+    "budget": null,
+    "status": null,
+    "note": null
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 3. Delete Project
+
+**URL** : http://localhost:8090/api/v1/customers/{CustomerId}/projects/{ProjectId}
+
+**Method :** DELETE
+
+**Description :** Delete Project
+
+**Header :** Bearer {token User}
+
+**Parameter :**
+
+**Request Body :**
+
+**Response Body :**
+```json
+{
+    "success": true,
+    "message": "deleteProjectSUCCESSFUL"
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 4. Search Project
+
+**URL** : http://localhost:8090/api/v1/customers/search
+
+**Method :** GET
+
+**Description :** Get Current Project
+
+**Header :** Bearer {token}
+
+**Parameter :**
+
+**Request Body :**
+```json
+{
+    "searchCondition": {
+        "userSearchCondition": {
+            "username": "leanne"
+    
+        },
+        "customerSearchCondition": {
+            "customerName":"a",
+            "id": 4
+        }
+    }
+}
+```
+
+**Response Body :**
+```json
+[
+    {
+        "id": 4,
+        "customerName": "April",
+        "phone": null,
+        "email": null,
+        "address": null,
+        "filed": null,
+        "note": null
+    }
+]
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
