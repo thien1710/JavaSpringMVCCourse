@@ -1,3 +1,4 @@
+
 # Esm System
 ## aa
 ### 111
@@ -37,94 +38,268 @@ The app will start running at <http://localhost:8080>
 
 The app defines following CRUD APIs.
 
-### Users
-
-| Method | Url | Description | Sample Valid Request Body |
-| ------ | --- | ----------- | ------------------------- |
-| POST   | /rest/v1/entities/auth/signup | Add user without role based | [JSON](#addUserWithoutRoleBased) |
-| POST   | /rest/v1/entities/auth/signin | Login to created account (ADMIN or USER) | [JSON](#userLogin) |
-| POST   | /rest/v1/entities/users | Add user with role based (ADMIN) | [JSON](#addUserWithRoleBased) |
-| GET    | /rest/v1/entities/users/{id} | Get user by id (ADMIN or USER) | [JSON](#getUserById) |
-| GET    | /rest/v1/entities/users/me | Get current user (USER) | [JSON](#getCurrentUser) |
-| PUT    | /rest/v1/entities/users/{username} | Update user (ADMIN or USER) | [JSON](#updateUser) |
-| PUT    | /rest/v1/entities/users/{username}/giveAdmin | Give admin role (ADMIN) | [JSON](#giveAdmin) |
-| PUT    | /rest/v1/entities/users/{username}/takeAdmin | Take admin role (ADMIN) | [JSON](#takeAdmin) |
-| DELETE | /rest/v1/entities/users/{username} | Delete user (ADMIN or USER) | [JSON](#deleteUser) |
+## 1. Users
 
 Test them using postman or any other rest client.
 
 ## Sample Valid JSON Request Bodys
 
-##### <a id="(addUserWithoutRoleBased) ">Add user without role based -> /rest/v1/entities/auth/signup</a>
+### 1. Login
+
+**URL** : http://localhost:8090/api/v1/auth/signin/
+
+**Method :** POST
+
+**Description :** Login
+
+**Header :**
+
+**Parameter :**
+
+**Request Body :**
 ```json
 {
-	"firstName": "Leanne",
-	"lastName": "Graham",
-	"username": "leanne2",
-	"password": "password",
-	"email": "leanne2.graham@gmail.com"
+    "username":"leanne",
+    "password":"P@ssw0rd"
 }
 ```
 
-##### <a id="(userLogin) ">Login to created account (ADMIN or USER) -> /rest/v1/entities/auth/signin -> Generate token to response body</a>
+**Response Body :**
+```json
+{"token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWFubmUiLCJzY29wZXMiOiJST0xFX0FETUlOLFJPTEVfVVNFUiIsImlhdCI6MTYwMTUyNzU4MiwiZXhwIjoxNjAxNTQ1NTgyfQ.AD2_2SLXEa2P88EW0N9m43iTpHYgfHkDkDRtc2Gfyzc"}
+```
+
+FAILD :
 ```json
 {
-    "username":"mrthien3",
-    "password":"password"
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
 }
 ```
 
-##### <a id="addUserWithRoleBased">Add user with role based (ADMIN) -> /rest/v1/entities/users -> Take token from login request and add to the header authorization</a>
+### 2. Signup
+
+**URL** : http://localhost:8090/api/v1/auth/signup
+
+**Method :** POST
+
+**Description :** Signup
+
+**Header :**
+
+**Parameter :**
+
+**Request Body :**
+```json
+{
+	"firstName": "leanne12",
+	"lastName": "jack",
+	"username": "leanne13",
+	"password": "P@ssw0rd",
+	"email": "leanne13.graham@gmail.com"
+}
+```
+
+**Response Body :**
+```json
+{
+    "success": true,
+    "message": "User registered successfully"
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 3. Add User
+
+**URL** : http://localhost:8090/api/v1/users
+
+**Method :** POST
+
+**Description :** Add user
+
+**Header :** Bearer {token Admin}
+
+**Parameter :**
+
+**Request Body :**
 ```json
 {
 	"firstName": "Thien",
 	"lastName": "Nguyen",
-	"username": "mrthien4",
-	"password": "password",
-	"email": "mrthien4@gmail.com",
-    "departments": [
-        {
-            "departmentName": "Victor Plains",
-            "qty": "Suite 879",
-            "note": "Wisokyburgh"
-	    }
-    ] 
+	"username": "thien1710",
+	"password": "P@ssw0rd",
+	"email": "nguyen.tran.nhat.thien1710@gmail.com",
+    "role": "USER",
+    "departmentId": 1
 }
+
 ```
 
+**Response Body :**
 ```json
 {
-	"object" : "user",
-	"item" : 
-	{
-		"firstName": "User1",
-		"lastName": "user1",
-		"username": "user1",
-		"password": "user1",
-		"email": user1@gmail.com
-		…
-	}
+    "success": true,
+    "message": "User registered successfully"
 }
-{
-    "searchCondition": {
-        "userSearchCondition": {
-            "username": "leanne"
-    
-        },
-        "customerSearchCondition": {
-            "customerName":"a",
-            "id": 4
-        }
-    }
-}
-
 ```
 
-##### <a id="(getUserById) ">Get user by id (ADMIN or USER) -> /rest/v1/entities/users/{id} -> Take token from login request and add to the header authorization</a>
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
 
-##### <a id="(getCurrentUser) ">Get current user (USER) -> /rest/v1/entities/users/me -> Take token from login request and add to the header authorization</a>
+### 4. Get Current User
 
-##### <a id="(updateUser) ">Update user (ADMIN or USER) -> /rest/v1/entities/users/{username} -> Take token from login request and add to the header authorization</a>
+**URL** : http://localhost:8090/api/v1/users/me
+
+**Method :** GET
+
+**Description :** Get Current User
+
+**Header :** 
+
+**Authorization** : Bearer {token}
+
+**Parameter :** Bearer {token Admin}
+
+**Request Body :**
+```
+
+**Response Body :**
+```json
+{
+    "id": 1,
+    "userIdHash": "zBaIw5o1xg5211c3Oocn6DiuWRm8t3",
+    "firstName": "leanne",
+    "lastName": "graham",
+    "username": "leanne",
+    "email": "leanne.graham@gmail.com",
+    "address": null,
+    "phone": "0001",
+    "website": null,
+    "salaryNum": null,
+    "roles": [
+        {
+            "id": 1,
+            "name": "ADMIN"
+        },
+        {
+            "id": 2,
+            "name": "USER"
+        }
+    ],
+    "departments": []
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+
+
+
+
+
+
+
+
+### 5. Forget Password
+
+**URL** : http://localhost:8090/api/v1/users/password-forgot-request
+
+**Method :** POST
+
+**Description :** Forget Password
+
+**Header :** Reset Password
+
+**Parameter :**
+
+**Request Body :**
+```json
+{
+    "email": "leanne.graham@gmail.com"
+}
+```
+
+**Response Body :**
+```json
+{
+    "responseStatus": "SUCCESS",
+    "description": "REQUEST_PASSWORD_RESET_SUCCESSFUL",
+    "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWFubmUiLCJleHAiOjE2MDUxMzI1MDZ9.K8I1ow96KehiidNL3O8RJFfYsjbMuF0_oQw9M8U1uO4"
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 6. Reset Password
+
+**URL** : http://localhost:8090/api/v1/users/forgot-password/reset
+
+**Method :** PUT
+
+**Description :** Reset Password
+
+**Header :** Reset Password
+
+**Parameter :** 
+
+    token: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJsZWFubmUiLCJleHAiOjE2MDUxMzQxMTR9.gfTc_fVnYcdIDUy8mU5Jy8kqkhmASezuE-eueYob8j4"
+    password: "P@ssw0rd"
+
+**Request Body :**
+
+**Response Body :** "updatePasswordSUCCESSFUL"
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 7.  User
+
+**URL** : http://localhost:8090/api/v1/users/leanne13
+
+**Method :** PUT
+
+**Description :** Update user
+
+**Header :** Bearer {token}
+
+**Parameter :**
+
+**Request Body :**
 ```json
 {
 	"firstName": "1111111111111111111111Thien",
@@ -142,13 +317,194 @@ Test them using postman or any other rest client.
 }
 ```
 
-##### <a id="(giveAdmin) ">Give admin role (ADMIN) -> /rest/v1/entities/users/{username}/giveAdmin -> Take token from login request and add to the header authorization</a>
+**Response Body :**
+```json
+{
+    "id": 9902,
+    "userIdHash": "9zhXQiuzoizHzYAkrNQT6OmKktK0ti",
+    "firstName": "1111111111111111111111Thien",
+    "lastName": "Nguyen",
+    "username": "mrthien1",
+    "email": "leanne13.graham@gmail.com",
+    "address": null,
+    "phone": null,
+    "website": null,
+    "salaryNum": null,
+    "roles": [
+        {
+            "id": 2,
+            "name": "USER"
+        }
+    ],
+    "departments": []
+}
+```
 
-##### <a id="((takeAdmin) ) ">Take admin role (ADMIN) -> /rest/v1/entities/users/{username}/takeAdmin -> Take token from login request and add to the header authorization</a>
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
 
-##### <a id="((deleteUser) ) ">Delete user (ADMIN or USER) -> /rest/v1/entities/users/{username} -> Take token from login request and add to the header authorization</a>
+### 8. Delete User
 
-##a
-####a
+**URL** : http://localhost:8090/api/v1/users/me
 
-![segment](https://api.segment.io/v1/pixel/track?data=ewogICJ3cml0ZUtleSI6ICJwcDJuOTU4VU1NT21NR090MWJXS0JQd0tFNkcydW51OCIsCiAgInVzZXJJZCI6ICIxMjNibG9nYXBpMTIzIiwKICAiZXZlbnQiOiAiQmxvZ0FwaSB2aXNpdGVkIiwKICAicHJvcGVydGllcyI6IHsKICAgICJzdWJqZWN0IjogIkJsb2dBcGkgdmlzaXRlZCIsCiAgICAiZW1haWwiOiAiY29tcy5zcHVyc0BnbWFpbC5jb20iCiAgfQp9)
+**Method :** DELETE
+
+**Description :** Delete User
+
+**Header :** 
+
+**Authorization** :
+
+**Parameter :** Bearer {token Admin}
+
+**Request Body :**
+
+**Response Body :**
+```json
+{
+    "success": true,
+    "message": "deleteSUCCESSFUL"
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 8. Give Admin
+
+**URL** : http://localhost:8090/api/v1/users/9900/giveAdmin
+
+**Method :** PUT
+
+**Description :** Give Admin
+
+**Header :** Bearer {token Admin}
+
+**Parameter :**
+
+**Request Body :**
+
+**Response Body :**
+```json
+{
+    "success": true,
+    "message": "GIVE_ADMIN_ROLE_TO_USER_SUCCESSFUL"
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 9. Take Admin
+
+**URL** : http://localhost:8090/api/v1/users/9900/giveAdmin
+
+**Method :** PUT
+
+**Description :** Take Admin
+
+**Header :** Bearer {token Admin}
+
+**Parameter :**
+
+**Request Body :**
+
+**Response Body :**
+```json
+{
+    "success": true,
+    "message": "TAKE_ADMIN_ROLE_FROM_USER_SUCCESSFUL"
+}
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+### 10. Search User
+
+**URL** : http://localhost:8090/api/v1/users/search
+
+**Method :** GET
+
+**Description :** Search User
+
+**Header :** Bearer {token}
+
+**Parameter :**
+
+**Request Body :**
+```json
+{
+    "searchCondition": {
+        "userSearchCondition": {
+            "id": 9900
+        }
+    }
+}
+```
+
+**Response Body :**
+```json
+[
+    {
+        "id": 9900,
+        "userIdHash": "b2ba59b1e30926257e797fee9cad597848227fa1",
+        "firstName": "Brando",
+        "lastName": "Bins",
+        "username": "salma37",
+        "email": "aheller@example.org",
+        "address": "304 Baumbach Shoals Suite 276\nNorth Katrine, VT 87563",
+        "phone": "251-165-3728",
+        "website": "http://rosenbaumlabadie.com/",
+        "salaryNum": 0,
+        "roles": [
+            {
+                "id": 2,
+                "name": "USER"
+            }
+        ],
+        "departments": []
+    }
+]
+```
+
+FAILD :
+```json
+{
+	"timestamp" : "",
+	"message" :  result (error),
+	"details" :	uri (url) .
+}
+```
+
+
+enter code here
+
+
+
+
+enter code here
