@@ -91,9 +91,6 @@ Test them using postman or any other rest client.
     ] 
 }
 ```
-```json
-{ "one": 2, "three": { "point_1": "point_2", "point_3": 3.4 }, "list": [ "one", "two", "three" ] }
-```
 
 ##### <a id="(getUserById) ">Get user by id (ADMIN or USER) -> /rest/v1/entities/users/{id} -> Take token from login request and add to the header authorization</a>
 
