@@ -14,9 +14,9 @@ import java.util.List;
 
 public interface CustomerService {
 
-    Customer updateCustomer(Long id, CustomerRequest newPostRequest, Authentication authentication);
+    Customer updateCustomer(Long customerId, CustomerRequest newPostRequest, Authentication authentication);
 
-    ApiResponse deleteCustomer(Long id, Authentication authentication);
+    ApiResponse deleteCustomer(Long customerId, Authentication authentication);
 
     CustomerResponse addCustomer(CustomerRequest postRequest, String currentUserUsername);
 

@@ -17,6 +17,7 @@ import com.example.demo.reponsitory.CustomerRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.service.CustomerService;
 import com.example.demo.utils.EnumConstants;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,8 +48,9 @@ public class CustomerServiceImpl implements CustomerService {
         if (user == null) throw new UsernameNotFoundException(currentUserUsername + ErrorMessages.NOT_FOUND.getErrorMessage());
 
         Customer customer = new Customer();
-        customer.setCustomerName(customerRequest.getCustomerName());
+//        customer.setCustomerName(customerRequest.getCustomerName());
         customer.setUser(user);
+        BeanUtils.copyProperties(customerRequest, customer);
 
         Customer newCustomer = customerRepository.save(customer);
 
@@ -60,11 +62,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer updateCustomer(Long id, CustomerRequest customerRequest, Authentication authentication) {
-        Customer customer = customerRepository.findById(id)
+    public Customer updateCustomer(Long customerId, CustomerRequest customerRequest, Authentication authentication) {
+        Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
-                                + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + id));
+                                + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + customerId));
 
         if (customer.getUser().getUsername().equals(authentication.getName())
                 || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))
@@ -79,14 +81,14 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public ApiResponse deleteCustomer(Long id, Authentication authentication) {
-        Customer customer = customerRepository.findById(id)
+    public ApiResponse deleteCustomer(Long customerId, Authentication authentication) {
+        Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage() +
-                                EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + id));
+                                EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + customerId));
         if (customer.getUser().getUsername().equals(authentication.getName())
                 || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))) {
-            customerRepository.deleteById(id);
+            customerRepository.deleteById(customerId);
             return new ApiResponse(Boolean.TRUE, "You successfully deleted post");
         }
 

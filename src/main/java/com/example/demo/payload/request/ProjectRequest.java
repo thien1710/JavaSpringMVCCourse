@@ -1,6 +1,9 @@
 package com.example.demo.payload.request;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.sql.Timestamp;
 import java.time.Instant;
 
 public class ProjectRequest {
@@ -8,10 +11,12 @@ public class ProjectRequest {
     @NotBlank(message = "projectName must not be blank")
     private String projectName;
 
-    private Instant startTime;
+    @NotNull(message = "startTime must not be null")
+    private Timestamp startTime;
 
-    private Instant finishtTime;
+    private Timestamp finishtTime;
 
+    @NotNull(message = "totalTime must not be null")
     private Long totalTime;
 
     private Long budget;
@@ -28,19 +33,19 @@ public class ProjectRequest {
         this.projectName = projectName;
     }
 
-    public Instant getStartTime() {
+    public Timestamp getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Instant startTime) {
+    public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 
-    public Instant getFinishtTime() {
+    public Timestamp getFinishtTime() {
         return finishtTime;
     }
 
-    public void setFinishtTime(Instant finishtTime) {
+    public void setFinishtTime(Timestamp finishtTime) {
         this.finishtTime = finishtTime;
     }
 

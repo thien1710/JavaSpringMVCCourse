@@ -61,6 +61,7 @@
 			<version>0.9.1</version>
 		</dependency>
 
+<!--		validator-->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>

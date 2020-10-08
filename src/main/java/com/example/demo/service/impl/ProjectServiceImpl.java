@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import ch.qos.logback.core.joran.util.beans.BeanUtil;
 import com.example.demo.utils.ErrorMessages;
 import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
@@ -17,7 +18,9 @@ import com.example.demo.reponsitory.ProjectRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.service.ProjectService;
 import com.example.demo.utils.EnumConstants;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -52,7 +55,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = new Project();
         project.setUser(user);
         project.setCustomer(customer);
-        project.setProjectName(projectRequest.getProjectName());
+        BeanUtils.copyProperties(projectRequest, project);
 
         Project newProject = projectRepository.save(project);
 
@@ -131,13 +134,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Project> query = builder.createQuery(Project.class);
-
-        //User
-        Root<User> userRoot = query.from(User.class);
-
-        //Customer
-        Root<Customer> customerRoot = query.from(Customer.class);
-        Join<Customer, User> customerUserJoin = customerRoot.join(Customer_.user);
 
         Root<Project> project = query.from(Project.class);
         Join<Project, Customer> customer = project.join(Project_.customer);
