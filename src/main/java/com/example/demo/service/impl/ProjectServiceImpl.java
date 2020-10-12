@@ -1,6 +1,9 @@
 package com.example.demo.service.impl;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
+import com.example.demo.exceptions.AppException;
+import com.example.demo.utils.Configs;
+import com.example.demo.utils.Constants;
 import com.example.demo.utils.ErrorMessages;
 import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
@@ -64,6 +67,12 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Project updateProject(Long customerId, Long id, ProjectRequest projectRequest, Authentication authentication) {
+
+        Boolean nameMatches = Configs.isValidTextRegrex(projectRequest.getProjectName(), Constants.REGREX.NAME);
+        if (!nameMatches) {
+            throw new AppException("Name cannot contain special chracter");
+        }
+
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
