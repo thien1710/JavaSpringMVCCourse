@@ -185,7 +185,7 @@ public class ProjectServiceImpl implements ProjectService {
         Predicate hasProjectId = builder.equal(project.get(Project_.id), projectSearchCondition.getId());
         Predicate hasProjectName = builder.like(project.get(Project_.projectName), "%" + projectSearchCondition.getProjectName() + "%");
         Predicate hasStartTimeGt = builder.greaterThanOrEqualTo(project.get(Project_.startTime), projectSearchCondition.getStartTime());
-        Predicate hasFinishTimeGt = builder.greaterThanOrEqualTo(project.get(Project_.finishtTime), projectSearchCondition.getFinishtTime());
+        Predicate hasFinishTimeGt = builder.equal(project.get(Project_.finishtTime), projectSearchCondition.getFinishtTime());
         Predicate hasTotalTimeGt = builder.greaterThanOrEqualTo(project.get(Project_.totalTime), projectSearchCondition.getTotalTime());
         Predicate hasBudgetGt = builder.greaterThanOrEqualTo(project.get(Project_.budget), projectSearchCondition.getBudget());
 
