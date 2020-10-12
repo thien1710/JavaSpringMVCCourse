@@ -15,8 +15,7 @@ public class ProjectRequest {
     private Timestamp startTime;
 
     private Timestamp finishtTime;
-
-    @NotNull(message = "totalTime must not be null")
+    
     private Long totalTime;
 
     private Long budget;
