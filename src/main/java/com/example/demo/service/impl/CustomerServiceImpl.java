@@ -68,6 +68,12 @@ public class CustomerServiceImpl implements CustomerService {
                         EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
                                 + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + customerId));
 
+        if (!customerRequest.getEmail().equals(customer.getEmail())){
+            if (customerRepository.existsByEmail(customerRequest.getEmail())) {
+                throw new HandlingException(HttpStatus.BAD_REQUEST, EnumConstants.EMAIL_IS_ALREADY_TAKEN.getEnumConstants());
+            }
+        };
+
         if (customer.getUser().getUsername().equals(authentication.getName())
                 || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_" + RoleName.ADMIN.toString()))
         ) {

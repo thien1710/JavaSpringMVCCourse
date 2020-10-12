@@ -22,6 +22,7 @@ public enum EnumConstants {
     PASSWORD("Password"),
     EMAIL("Email"),
     TOKEN("Token"),
+    EMAIL_IS_ALREADY_TAKEN("Email is already taken"),
     ;
 
     private String enumConstants;
