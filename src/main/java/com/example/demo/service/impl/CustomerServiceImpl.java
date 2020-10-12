@@ -1,5 +1,8 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.exceptions.AppException;
+import com.example.demo.utils.Configs;
+import com.example.demo.utils.Constants;
 import com.example.demo.utils.ErrorMessages;
 import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
@@ -63,6 +66,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer updateCustomer(Long customerId, CustomerRequest customerRequest, Authentication authentication) {
+
+        //Check no special chracter
+        Boolean nameMatches = Configs.isValidTextRegrex(customerRequest.getCustomerName(), Constants.REGREX.NAME);
+        if (!nameMatches) {
+            throw new AppException("Name cannot contain special chracter");
+        }
+
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         EnumConstants.CUSTOMER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
