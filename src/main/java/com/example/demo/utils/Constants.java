@@ -13,6 +13,7 @@ public interface Constants {
     interface REGREX {
         String PASSWORD = "^(?=.*[0-9])" + "(?=.*[a-z])(?=.*[A-Z])" + "(?=.*[@#$%^&+=])" + "(?=\\S+$).{8,}$";
         String USERNAME = "[a-z0-9_-]{1,25}$";
+        String NAME = "^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$";
     }
 
     public interface VALIDATION_MESSAGES {

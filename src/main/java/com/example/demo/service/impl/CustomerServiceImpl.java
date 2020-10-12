@@ -1,5 +1,8 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.exceptions.AppException;
+import com.example.demo.utils.Configs;
+import com.example.demo.utils.Constants;
 import com.example.demo.utils.ErrorMessages;
 import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
@@ -42,8 +45,21 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * add customer
+     * @param customerRequest
+     * @param currentUserUsername
+     * @return
+     */
     @Override
     public CustomerResponse addCustomer(CustomerRequest customerRequest, String currentUserUsername) {
+
+        Boolean nameMatches = Configs.isValidTextRegrex(customerRequest.getCustomerName(), Constants.REGREX.NAME);
+        //Check no special chracter
+        if (!nameMatches) {
+            throw new AppException("Name cannot contain special chracter");
+        }
+
         User user = userRepository.findByUsername(currentUserUsername);
         if (user == null) throw new UsernameNotFoundException(currentUserUsername + ErrorMessages.NOT_FOUND.getErrorMessage());
 
