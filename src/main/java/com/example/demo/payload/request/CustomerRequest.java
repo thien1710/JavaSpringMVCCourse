@@ -25,6 +25,7 @@ public class CustomerRequest {
 
     private String filed;
 
+    @Size(max = 255)
     private String note;
 
     public String getCustomerName() {
