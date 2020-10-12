@@ -30,7 +30,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -86,6 +88,17 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
+
+        List<Role> listRoles = new ArrayList();
+        List<Role> listRolesIgnoreAdminRole = new ArrayList();
+        listRoles = roleRepository.findAll();
+
+        for (int i = 0; i < listRoles.size(); i++) {
+            if (listRoles.get(i).getName() != RoleName.ADMIN){
+                listRolesIgnoreAdminRole.add(listRoles.get(i));
+            }
+        }
+
         Boolean usernameMatches = Configs.isValidTextRegrex(signUpRequest.getUsername(), Constants.REGREX.USERNAME);
         if (!usernameMatches) {
             throw new AppException("Username is wrong");
@@ -118,14 +131,22 @@ public class AuthenticationController {
 
         Set<Role> roles = new HashSet<>();
 
+
+
         if (userRepository.count() == 0) {
-            roles.add(roleRepository.findByName(RoleName.USER)
-                    .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
-            roles.add(roleRepository.findByName(RoleName.ADMIN)
-                    .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
+            for (int i = 0; i < listRoles.size(); i++) {
+                roles.add(listRoles.get(i));
+            }
+//            roles.add(roleRepository.findByName(RoleName.USER)
+//                    .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
+//            roles.add(roleRepository.findByName(RoleName.ADMIN)
+//                    .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
         } else {
-            roles.add(roleRepository.findByName(RoleName.USER)
-                    .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
+//            roles.add(roleRepository.findByName(RoleName.USER)
+//                    .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
+            for (int i = 0; i < listRolesIgnoreAdminRole.size(); i++) {
+                roles.add(listRolesIgnoreAdminRole.get(i));
+            }
         }
 
         user.setRoles(roles);
