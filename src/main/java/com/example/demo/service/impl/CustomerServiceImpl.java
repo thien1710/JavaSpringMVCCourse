@@ -44,6 +44,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse addCustomer(CustomerRequest customerRequest, String currentUserUsername) {
+
+        if (customerRepository.existsByEmail(customerRequest.getEmail())) {
+            throw new HandlingException(HttpStatus.BAD_REQUEST, EnumConstants.EMAIL_IS_ALREADY_TAKEN.getEnumConstants());
+        }
+
         User user = userRepository.findByUsername(currentUserUsername);
         if (user == null) throw new UsernameNotFoundException(currentUserUsername + ErrorMessages.NOT_FOUND.getErrorMessage());
 
