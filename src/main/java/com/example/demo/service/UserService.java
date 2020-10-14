@@ -3,7 +3,7 @@ package com.example.demo.service;
 import com.example.demo.model.project.Project;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.request.SearchRequest;
-import com.example.demo.payload.request.UserAddResquest;
+import com.example.demo.payload.request.UserAddRequest;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.UserResponse;
 
@@ -14,7 +14,7 @@ public interface UserService {
 
     User getCurrentUser(String username);
 
-    ApiResponse addUser(UserAddResquest userAddResquest);
+    ApiResponse addUser(UserAddRequest userAddResquest);
 
     UserResponse getUser(String id);
 

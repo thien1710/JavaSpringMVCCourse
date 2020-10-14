@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import com.example.demo.payload.request.UserAddRequest;
 import com.example.demo.utils.Configs;
 import com.example.demo.utils.ErrorMessages;
 import com.example.demo.config.TokenProvider;
@@ -16,7 +17,6 @@ import com.example.demo.model.role.RoleName;
 import com.example.demo.model.user.User;
 import com.example.demo.model.user.User_;
 import com.example.demo.payload.request.SearchRequest;
-import com.example.demo.payload.request.UserAddResquest;
 import com.example.demo.payload.request.UserSearchCondition;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.ResponseOperationName;
@@ -87,35 +87,69 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public ApiResponse addUser(UserAddResquest userAddResquest) {
+    public ApiResponse addUser(UserAddRequest userAddRequest) {
         User user = new User();
-        if (userRepository.existsByUsername(userAddResquest.getUsername())) {
+        if (userRepository.existsByUsername(userAddRequest.getUsername())) {
             throw new HandlingException(HttpStatus.BAD_REQUEST,
                     EnumConstants.USER_NAME.getEnumConstants() + ErrorMessages.IS_ALREADY_TAKEN.getErrorMessage());
         }
 
-        if (userRepository.existsByEmail(userAddResquest.getEmail())) {
+        if (userRepository.existsByEmail(userAddRequest.getEmail())) {
             throw new HandlingException(HttpStatus.BAD_REQUEST,
                     EnumConstants.EMAIL.getEnumConstants() + ErrorMessages.IS_ALREADY_TAKEN.getErrorMessage());
         }
 
         Set<Role> roles = new HashSet<>();
-        if (userAddResquest.getRole() == null || userAddResquest.getRole().equals("") || userAddResquest.getRole().equals("USER")) {
+
+        List<Role> listRoles = new ArrayList();
+        listRoles = roleRepository.findAll();
+
+        //Check valid input "role"
+//        for (int i = 0; i < userAddRequest.getRole().size(); i++){
+//            int flag = 0;
+//            for (int j = 0; j<listRoles.size(); j++){
+//                if (!userAddRequest.getRole().get(i).getName().name().equals(listRoles.get(j).getName().name())) {
+//                    flag += 1;
+//                }
+//            }
+//            if (flag == listRoles.size()) {
+//                throw new HandlingException(HttpStatus.NOT_FOUND,
+//                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage());
+//            }
+//        }
+
+
+//        if (userAddResquest.getRole() == null || userAddResquest.getRole().equals("") || userAddResquest.getRole().equals("USER")) {
+//            roles.add(
+//                    roleRepository.findByName(RoleName.USER)
+//                            .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+//                                    EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
+//        } else if (userAddResquest.getRole().equals("ADMIN")) {
+//            roles.add(roleRepository.findByName(RoleName.ADMIN)
+//                    .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+//                            EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
+//            roles.add(roleRepository.findByName(RoleName.USER)
+//                    .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+//                            EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
+//        } else {
+//            throw new HandlingException(HttpStatus.BAD_REQUEST,
+//                    EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage());
+//        }
+
+
+        List<Role> list = new ArrayList<>();
+        list.addAll(userAddRequest.getRole());
+
+
+        for (int i = 0; i < userAddRequest.getRole().size(); i++) {
             roles.add(
-                    roleRepository.findByName(RoleName.USER)
+                    roleRepository.findByName(list.get(i).getName())
                             .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                                     EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-        } else if (userAddResquest.getRole().equals("ADMIN")) {
-            roles.add(roleRepository.findByName(RoleName.ADMIN)
-                    .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                            EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-            roles.add(roleRepository.findByName(RoleName.USER)
-                    .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                            EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-        } else {
-            throw new HandlingException(HttpStatus.BAD_REQUEST,
-                    EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage());
+            roles.add(listRoles.get(i));
         }
+
+
 
         user.setRoles(roles);
 
@@ -123,19 +157,19 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         user.setUserIdHash(publicUserId);
 
-        List<Department> listDepartments = new ArrayList<>();
-        Department department = departmentRepository.findById(userAddResquest.getDepartmentId().longValue());
-        if (department == null) throw new HandlingException(HttpStatus.NOT_FOUND,
-                EnumConstants.DEPARTMENT.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage() +
-                        EnumConstants.ID.getEnumConstants() +
-                        EnumConstants.EQUAL.getEnumConstants() + userAddResquest.getDepartmentId().longValue());
-        listDepartments.add(department);
+//        List<Department> listDepartments = new ArrayList<>();
+//        Department department = departmentRepository.findById(userAddRequest.getDepartmentId().longValue());
+//        if (department == null) throw new HandlingException(HttpStatus.NOT_FOUND,
+//                EnumConstants.DEPARTMENT.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage() +
+//                        EnumConstants.ID.getEnumConstants() +
+//                        EnumConstants.EQUAL.getEnumConstants() + userAddRequest.getDepartmentId().longValue());
+//        listDepartments.add(department);
+//
+//        user.setDepartments(listDepartments);
 
-        user.setDepartments(listDepartments);
+        userAddRequest.setPassword(bCryptPasswordEncoder.encode(userAddRequest.getPassword()));
 
-        userAddResquest.setPassword(bCryptPasswordEncoder.encode(userAddResquest.getPassword()));
-
-        BeanUtils.copyProperties(userAddResquest, user);
+        BeanUtils.copyProperties(userAddRequest, user);
 
         userRepository.save(user);
 
@@ -197,9 +231,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         roles.add(roleRepository.findByName(RoleName.ADMIN)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-        roles.add(
-                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
+//        roles.add(
+//                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+//                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
         user.setRoles(roles);
         userRepository.save(user);
         return new ApiResponse(Boolean.TRUE, ResponseOperationName.GIVE_ADMIN_ROLE_TO_USER_SUCCESSFUL.toString());
@@ -211,9 +245,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         if (user == null) throw new HandlingException(HttpStatus.NOT_FOUND,
                 EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage());
         Set<Role> roles = new HashSet<>();
-        roles.add(
-                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
+//        roles.add(
+//                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+//                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
         user.setRoles(roles);
         userRepository.save(user);
         return new ApiResponse(Boolean.TRUE, ResponseOperationName.TAKE_ADMIN_ROLE_FROM_USER_SUCCESSFUL.toString());

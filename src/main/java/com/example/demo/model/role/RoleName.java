@@ -2,7 +2,6 @@ package com.example.demo.model.role;
 
 public enum RoleName {
     ADMIN,
-    USER,
     ADD_CUSTOMER,
     ADD_PROJECT,
     DELETE_CUSTOMER,
@@ -10,5 +9,9 @@ public enum RoleName {
     UPDATE_CUSTOMER,
     UPDATE_PROJECT,
     VIEW_CUSTOMER,
-    VIEW_PROJECT
+    VIEW_PROJECT,
+    VIEW_USER,
+    ADD_USER,
+    UPDATE_USER,
+    DELETE_USER,
 }

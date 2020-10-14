@@ -1,6 +1,11 @@
 package com.example.demo.payload.request;
 
-public class UserAddResquest {
+import com.example.demo.model.role.Role;
+
+import java.util.List;
+import java.util.Set;
+
+public class UserAddRequest {
     private String firstName;
 
     private String lastName;
@@ -11,7 +16,7 @@ public class UserAddResquest {
 
     private String email;
 
-    private String role;
+    private Set<Role> role;
 
     private Long departmentId;
 
@@ -55,11 +60,11 @@ public class UserAddResquest {
         this.email = email;
     }
 
-    public String getRole() {
+    public Set<Role> getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Set<Role> role) {
         this.role = role;
     }
 

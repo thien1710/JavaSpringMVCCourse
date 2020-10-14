@@ -68,7 +68,6 @@ public class AuthenticationController {
         return "Hello World from Tomcat";
     }
 
-    //    @RequestMapping(value = "/generate-token", method = RequestMethod.POST)
     @PostMapping("/signin")
     public ResponseEntity<?> register(@Valid @RequestBody UserLoginRequestModel loginUser) throws AuthenticationException {
         try {
@@ -86,9 +85,15 @@ public class AuthenticationController {
         }
     }
 
+    /**
+     * Resgister user
+     * @param signUpRequest
+     * @return
+     */
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 
+        //Create list to get roles from db
         List<Role> listRoles = new ArrayList();
         List<Role> listRolesIgnoreAdminRole = new ArrayList();
         listRoles = roleRepository.findAll();
@@ -131,19 +136,11 @@ public class AuthenticationController {
 
         Set<Role> roles = new HashSet<>();
 
-
-
         if (userRepository.count() == 0) {
             for (int i = 0; i < listRoles.size(); i++) {
                 roles.add(listRoles.get(i));
             }
-//            roles.add(roleRepository.findByName(RoleName.USER)
-//                    .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
-//            roles.add(roleRepository.findByName(RoleName.ADMIN)
-//                    .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
         } else {
-//            roles.add(roleRepository.findByName(RoleName.USER)
-//                    .orElseThrow(() -> new AppException(USER_ROLE_NOT_SET)));
             for (int i = 0; i < listRolesIgnoreAdminRole.size(); i++) {
                 roles.add(listRolesIgnoreAdminRole.get(i));
             }

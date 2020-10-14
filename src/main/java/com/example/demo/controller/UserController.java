@@ -29,17 +29,17 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> addUser(@Valid @RequestBody UserAddResquest userAddResquest) {
-        Boolean usernameMatches = Configs.isValidTextRegrex(userAddResquest.getUsername(), Constants.REGREX.USERNAME);
+    public ResponseEntity<ApiResponse> addUser(@Valid @RequestBody UserAddRequest userAddRequest) {
+        Boolean usernameMatches = Configs.isValidTextRegrex(userAddRequest.getUsername(), Constants.REGREX.USERNAME);
         if (!usernameMatches) {
             throw new AppException("Username is wrong");
         }
 
-        Boolean passwordMatches = Configs.isValidTextRegrex(userAddResquest.getPassword(), Constants.REGREX.PASSWORD);
+        Boolean passwordMatches = Configs.isValidTextRegrex(userAddRequest.getPassword(), Constants.REGREX.PASSWORD);
         if (!passwordMatches) {
             throw new AppException("Password is wrong");
         }
-        ApiResponse newUser = userService.addUser(userAddResquest);
+        ApiResponse newUser = userService.addUser(userAddRequest);
 
         return new ResponseEntity<ApiResponse>(newUser, HttpStatus.CREATED);
     }
