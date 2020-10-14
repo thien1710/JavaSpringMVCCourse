@@ -32,6 +32,9 @@ import com.example.demo.utils.EnumConstants;
 import com.example.demo.utils.Utils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -285,7 +288,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public Collection<User> searchUsers(SearchRequest searchRequest) {
+    public Collection<User> searchUsers(SearchRequest searchRequest, int page) {
 
         if (searchRequest == null) {
             throw new HandlingException(HttpStatus.NOT_FOUND,
@@ -355,7 +358,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         }
 
         query.select(userRoot).where(condition);
-        return em.createQuery(query).getResultList();
+        return em.createQuery(query)
+                .setFirstResult((page - 1) * Integer.parseInt(Configs.PAGING.USER.LIMIT))
+                .setMaxResults(Integer.parseInt(Configs.PAGING.USER.LIMIT))
+                .getResultList();
     }
 
     /**

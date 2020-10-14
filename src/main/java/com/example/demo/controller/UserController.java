@@ -143,8 +143,10 @@ public class UserController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public Collection<User> getUsers(@RequestBody SearchRequest searchRequest) {
-        Collection<User> userCollection = userService.searchUsers(searchRequest);
+    public Collection<User> getUsers(@RequestBody SearchRequest searchRequest,
+                                     @RequestParam(value = "page", defaultValue = Configs.PAGING.USER.PAGE) int page) {
+        int currentPage = page > 0 ? page : Integer.parseInt(Configs.PAGING.USER.PAGE);
+        Collection<User> userCollection = userService.searchUsers(searchRequest,page);
         return userCollection;
     }
 

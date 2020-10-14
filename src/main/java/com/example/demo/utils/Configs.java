@@ -29,8 +29,8 @@ public class Configs {
 
     public interface PAGING {
         interface USER {
-            String LIMIT = "25";
-            String PAGE = "0";
+            String LIMIT = "5";
+            String PAGE = "1";
         }
     }
 

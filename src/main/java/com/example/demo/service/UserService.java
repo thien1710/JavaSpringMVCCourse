@@ -38,5 +38,5 @@ public interface UserService {
 
     User getUserById(String usename);
 
-    Collection<User> searchUsers(SearchRequest searchRequest);
+    Collection<User> searchUsers(SearchRequest searchRequest, int page);
 }
