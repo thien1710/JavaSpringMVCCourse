@@ -101,71 +101,22 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         Set<Role> roles = new HashSet<>();
 
-        List<Role> listRoles = new ArrayList();
-        listRoles = roleRepository.findAll();
-
-        //Check valid input "role"
-//        for (int i = 0; i < userAddRequest.getRole().size(); i++){
-//            int flag = 0;
-//            for (int j = 0; j<listRoles.size(); j++){
-//                if (!userAddRequest.getRole().get(i).getName().name().equals(listRoles.get(j).getName().name())) {
-//                    flag += 1;
-//                }
-//            }
-//            if (flag == listRoles.size()) {
-//                throw new HandlingException(HttpStatus.NOT_FOUND,
-//                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage());
-//            }
-//        }
-
-
-//        if (userAddResquest.getRole() == null || userAddResquest.getRole().equals("") || userAddResquest.getRole().equals("USER")) {
-//            roles.add(
-//                    roleRepository.findByName(RoleName.USER)
-//                            .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-//                                    EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-//        } else if (userAddResquest.getRole().equals("ADMIN")) {
-//            roles.add(roleRepository.findByName(RoleName.ADMIN)
-//                    .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-//                            EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-//            roles.add(roleRepository.findByName(RoleName.USER)
-//                    .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-//                            EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-//        } else {
-//            throw new HandlingException(HttpStatus.BAD_REQUEST,
-//                    EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage());
-//        }
-
-
+        //Convert Set to List
         List<Role> list = new ArrayList<>();
         list.addAll(userAddRequest.getRole());
-
 
         for (int i = 0; i < userAddRequest.getRole().size(); i++) {
             roles.add(
                     roleRepository.findByName(list.get(i).getName())
                             .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                                     EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-            roles.add(listRoles.get(i));
         }
-
-
 
         user.setRoles(roles);
 
         String publicUserId = utils.generateUserId(Configs.USER_ID_LENGTH);
 
         user.setUserIdHash(publicUserId);
-
-//        List<Department> listDepartments = new ArrayList<>();
-//        Department department = departmentRepository.findById(userAddRequest.getDepartmentId().longValue());
-//        if (department == null) throw new HandlingException(HttpStatus.NOT_FOUND,
-//                EnumConstants.DEPARTMENT.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage() +
-//                        EnumConstants.ID.getEnumConstants() +
-//                        EnumConstants.EQUAL.getEnumConstants() + userAddRequest.getDepartmentId().longValue());
-//        listDepartments.add(department);
-//
-//        user.setDepartments(listDepartments);
 
         userAddRequest.setPassword(bCryptPasswordEncoder.encode(userAddRequest.getPassword()));
 
@@ -222,12 +173,14 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public ApiResponse giveAdmin(long id) {
+
         User user = userRepository.findById(id);
         if (user == null) throw new HandlingException(HttpStatus.NOT_FOUND,
                 EnumConstants.USER.getEnumConstants() + ErrorMessages.NOT_FOUND_WITH.getErrorMessage()
                         + EnumConstants.ID.getEnumConstants() + EnumConstants.EQUAL.getEnumConstants() + id);
 
         Set<Role> roles = new HashSet<>();
+
         roles.add(roleRepository.findByName(RoleName.ADMIN)
                 .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
                         EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
