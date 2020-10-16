@@ -22,6 +22,6 @@ public interface CustomerService {
 
     List<Customer> getUsers(int page, int limit);
 
-    Collection<Customer> searchCustomers(SearchRequest searchRequest);
+    Collection<Customer> searchCustomers(SearchRequest searchRequest, int page);
 
 }

@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.utils.Configs;
 import com.example.demo.utils.ErrorMessages;
 import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
@@ -110,7 +111,7 @@ public class CustomerServiceImpl implements CustomerService {
     private EntityManager em;
 
     @Override
-    public Collection<Customer> searchCustomers(SearchRequest searchRequest) {
+    public Collection<Customer> searchCustomers(SearchRequest searchRequest, int page) {
 
         if (searchRequest == null) {
             throw new HandlingException(HttpStatus.NOT_FOUND,
@@ -216,7 +217,10 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         query.select(customerRoot).where(condition);
-        return em.createQuery(query).getResultList();
+        return em.createQuery(query)
+                .setFirstResult((page - 1) * Integer.parseInt(Configs.PAGING.USER.LIMIT))
+                .setMaxResults(Integer.parseInt(Configs.PAGING.USER.LIMIT))
+                .getResultList();
     }
 
 }

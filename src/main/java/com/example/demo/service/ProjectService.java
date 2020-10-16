@@ -16,5 +16,5 @@ public interface ProjectService {
 
     ApiResponse deleteProject(Long customerId, Long id, Authentication authentication);
 
-    Collection<Project> searchProject(SearchRequest searchRequest);
+    Collection<Project> searchProject(SearchRequest searchRequest, int page);
 }

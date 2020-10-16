@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
+import com.example.demo.utils.Configs;
 import com.example.demo.utils.ErrorMessages;
 import com.example.demo.exceptions.HandlingException;
 import com.example.demo.model.customer.Customer;
@@ -125,7 +126,7 @@ public class ProjectServiceImpl implements ProjectService {
     private EntityManager em;
 
     @Override
-    public Collection<Project> searchProject(SearchRequest searchRequest) {
+    public Collection<Project> searchProject(SearchRequest searchRequest, int page) {
 
         if (searchRequest == null) {
             throw new HandlingException(HttpStatus.NOT_FOUND,
@@ -282,6 +283,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         query.select(project).where(condition);
-        return em.createQuery(query).getResultList();
+        return em.createQuery(query)
+                .setFirstResult((page - 1) * Integer.parseInt(Configs.PAGING.USER.LIMIT))
+                .setMaxResults(Integer.parseInt(Configs.PAGING.USER.LIMIT))
+                .getResultList();
     }
 }

@@ -68,8 +68,10 @@ public class ProjectController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public Collection<Project> searchCustomers(@RequestBody SearchRequest searchRequest) {
-        Collection<Project> projectCollection = projectService.searchProject(searchRequest);
+    public Collection<Project> searchCustomers(@RequestBody SearchRequest searchRequest,
+                                               @RequestParam(value = "page", defaultValue = Configs.PAGING.USER.PAGE) int page) {
+        int currentPage = page > 0 ? page : Integer.parseInt(Configs.PAGING.USER.PAGE);
+        Collection<Project> projectCollection = projectService.searchProject(searchRequest, page);
         return projectCollection;
     }
 

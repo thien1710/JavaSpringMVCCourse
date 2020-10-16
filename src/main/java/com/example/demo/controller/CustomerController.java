@@ -82,8 +82,10 @@ public class CustomerController {
             consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public Collection<Customer> searchCustomers(@RequestBody SearchRequest searchRequest) {
-        Collection<Customer> userCollection = customerService.searchCustomers(searchRequest);
+    public Collection<Customer> searchCustomers(@RequestBody SearchRequest searchRequest,
+                                                @RequestParam(value = "page", defaultValue = Configs.PAGING.USER.PAGE) int page) {
+        int currentPage = page > 0 ? page : Integer.parseInt(Configs.PAGING.USER.PAGE);
+        Collection<Customer> userCollection = customerService.searchCustomers(searchRequest, page);
         return userCollection;
     }
 
