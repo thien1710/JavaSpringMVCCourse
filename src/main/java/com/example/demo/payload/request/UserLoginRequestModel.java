@@ -1,11 +1,10 @@
 package com.example.demo.payload.request;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 public class UserLoginRequestModel {
 
-//    @NotBlank(message = "Username is mandatory")
+    //    @NotBlank(message = "Username is mandatory")
     private String username;
 
     @NotBlank(message = "Password is mandatory")

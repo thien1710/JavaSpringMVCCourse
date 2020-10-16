@@ -2,7 +2,6 @@ package com.example.demo.payload.request;
 
 import com.example.demo.model.role.Role;
 
-import java.util.List;
 import java.util.Set;
 
 public class UserAddRequest {

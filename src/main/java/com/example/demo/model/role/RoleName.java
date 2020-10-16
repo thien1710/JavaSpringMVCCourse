@@ -14,4 +14,5 @@ public enum RoleName {
     ADD_USER,
     UPDATE_USER,
     DELETE_USER,
+    USER,
 }

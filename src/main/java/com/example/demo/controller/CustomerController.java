@@ -1,8 +1,5 @@
 package com.example.demo.controller;
 
-import javax.validation.Valid;
-
-import com.example.demo.utils.Configs;
 import com.example.demo.model.customer.Customer;
 import com.example.demo.payload.request.CustomerRequest;
 import com.example.demo.payload.request.SearchRequest;
@@ -10,6 +7,7 @@ import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.CustomerResponse;
 import com.example.demo.security.IAuthenticationFacade;
 import com.example.demo.service.CustomerService;
+import com.example.demo.utils.Configs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +33,7 @@ public class CustomerController {
     private CustomerService customerService;
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('USER') or hasRole('ADD_CUSTOMER')")
     public ResponseEntity<CustomerResponse> addCustomer(@Valid @RequestBody CustomerRequest customerRequest, Authentication authentication) {
 
         CustomerResponse postResponse = customerService.addCustomer(customerRequest, authentication.getName());
@@ -43,7 +42,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('UPDATE_CUSTOMER')")
     public ResponseEntity<Customer> updateCustomer(@PathVariable(name = "id") Long id,
                                                @Valid @RequestBody CustomerRequest customerRequest,
                                                Authentication authentication) {
@@ -54,7 +53,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DELETE_CUSTOMER')")
     public ResponseEntity<ApiResponse> deleteCustomer(@PathVariable(name = "id") Long id, Authentication authentication) {
         ApiResponse apiResponse = customerService.deleteCustomer(id, authentication);
 

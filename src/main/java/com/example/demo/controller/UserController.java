@@ -1,15 +1,13 @@
 package com.example.demo.controller;
 
-import javax.validation.Valid;
-
-import com.example.demo.utils.Configs;
-import com.example.demo.utils.Constants;
 import com.example.demo.exceptions.AppException;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.request.*;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.ForgotPasswordResponse;
 import com.example.demo.service.UserService;
+import com.example.demo.utils.Configs;
+import com.example.demo.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Collection;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -28,7 +27,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('ADD_USER')")
     public ResponseEntity<ApiResponse> addUser(@Valid @RequestBody UserAddRequest userAddRequest) {
         Boolean usernameMatches = Configs.isValidTextRegrex(userAddRequest.getUsername(), Constants.REGREX.USERNAME);
         if (!usernameMatches) {
@@ -44,18 +43,8 @@ public class UserController {
         return new ResponseEntity<ApiResponse>(newUser, HttpStatus.CREATED);
     }
 
-//    @GetMapping(path = "/{id}",
-//            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-//    public User getUser(@PathVariable(value = "id") Long id) {
-//
-//        User user = userService.getUserById(id);
-//
-//        return user;
-//    }
-
     @PutMapping("/{username}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('UPDATE_USER')")
     public ResponseEntity<User> updateUser(@Valid @RequestBody User newUser,
                                            @PathVariable(value = "username") String username) {
         User updatedUSer = userService.updateUser(newUser, username);
@@ -64,7 +53,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{username}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('DELETE_USER')")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable(value = "username") long id) {
         ApiResponse apiResponse = userService.deleteUser(id);
 
@@ -79,19 +68,12 @@ public class UserController {
 
     }
 
-    @PutMapping("/{username}/giveAdmin")
+    @PutMapping("/{userId}/setRoles")
     @PreAuthorize("hasRole('ADMIN')")
 
-    public ResponseEntity<ApiResponse> giveAdmin(@PathVariable(name = "username") Long id) {
-        ApiResponse apiResponse = userService.giveAdmin(id);
-
-        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
-    }
-
-    @PutMapping("/{username}/takeAdmin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> takeAdmin(@PathVariable(name = "username") long id) {
-        ApiResponse apiResponse = userService.removeAdmin(id);
+    public ResponseEntity<ApiResponse> setRoles(@Valid @RequestBody SetRolesRequest setRolesRequest,
+                                                @PathVariable(name = "userId") Long id) {
+        ApiResponse apiResponse = userService.setRoles(setRolesRequest, id);
 
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
     }

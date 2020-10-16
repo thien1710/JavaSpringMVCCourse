@@ -1,11 +1,9 @@
 package com.example.demo.payload.request;
 
-import org.hibernate.validator.constraints.UniqueElements;
-
-import javax.persistence.Column;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class CustomerRequest {
 

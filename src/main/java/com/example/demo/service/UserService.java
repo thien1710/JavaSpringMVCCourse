@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.model.project.Project;
 import com.example.demo.model.user.User;
 import com.example.demo.payload.request.SearchRequest;
+import com.example.demo.payload.request.SetRolesRequest;
 import com.example.demo.payload.request.UserAddRequest;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.UserResponse;
@@ -24,9 +25,7 @@ public interface UserService {
 
     ApiResponse deleteUser(long id);
 
-    ApiResponse giveAdmin(long id);
-
-    ApiResponse removeAdmin(long id);
+    ApiResponse setRoles(SetRolesRequest setRolesRequest, long id);
 
     String requestPasswordForgot(String email);
 

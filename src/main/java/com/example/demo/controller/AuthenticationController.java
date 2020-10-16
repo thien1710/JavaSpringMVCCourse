@@ -1,7 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.utils.Configs;
-import com.example.demo.utils.Constants;
 import com.example.demo.config.TokenProvider;
 import com.example.demo.exceptions.AppException;
 import com.example.demo.exceptions.HandlingException;
@@ -15,7 +13,7 @@ import com.example.demo.reponsitory.RoleRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.security.AuthToken;
 import com.example.demo.service.UserService;
-import com.example.demo.utils.Utils;
+import com.example.demo.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -87,6 +85,7 @@ public class AuthenticationController {
 
     /**
      * Resgister user
+     *
      * @param signUpRequest
      * @return
      */
@@ -99,7 +98,7 @@ public class AuthenticationController {
         listRoles = roleRepository.findAll();
 
         for (int i = 0; i < listRoles.size(); i++) {
-            if (listRoles.get(i).getName() != RoleName.ADMIN){
+            if (listRoles.get(i).getName() != RoleName.ADMIN) {
                 listRolesIgnoreAdminRole.add(listRoles.get(i));
             }
         }
@@ -145,6 +144,10 @@ public class AuthenticationController {
                 roles.add(listRolesIgnoreAdminRole.get(i));
             }
         }
+
+        roles.add(
+                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
 
         user.setRoles(roles);
 

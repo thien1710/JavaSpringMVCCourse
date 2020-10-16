@@ -1,15 +1,7 @@
 package com.example.demo.service.impl;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import com.example.demo.payload.request.UserAddRequest;
-import com.example.demo.utils.Configs;
-import com.example.demo.utils.ErrorMessages;
 import com.example.demo.config.TokenProvider;
 import com.example.demo.exceptions.HandlingException;
-import com.example.demo.model.department.Department;
 import com.example.demo.model.project.Project;
 import com.example.demo.model.resetpasswordentity.ResetPasswordEntity;
 import com.example.demo.model.role.Role;
@@ -17,6 +9,8 @@ import com.example.demo.model.role.RoleName;
 import com.example.demo.model.user.User;
 import com.example.demo.model.user.User_;
 import com.example.demo.payload.request.SearchRequest;
+import com.example.demo.payload.request.SetRolesRequest;
+import com.example.demo.payload.request.UserAddRequest;
 import com.example.demo.payload.request.UserSearchCondition;
 import com.example.demo.payload.response.ApiResponse;
 import com.example.demo.payload.response.ResponseOperationName;
@@ -28,13 +22,12 @@ import com.example.demo.reponsitory.RoleRepository;
 import com.example.demo.reponsitory.UserRepository;
 import com.example.demo.security.SecurityConstants;
 import com.example.demo.service.UserService;
+import com.example.demo.utils.Configs;
 import com.example.demo.utils.EnumConstants;
+import com.example.demo.utils.ErrorMessages;
 import com.example.demo.utils.Utils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,8 +36,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service(value = "userService")
 public class UserServiceImpl implements UserDetailsService, UserService {
@@ -115,6 +116,10 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                                     EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
         }
 
+        roles.add(
+                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
+
         user.setRoles(roles);
 
         String publicUserId = utils.generateUserId(Configs.USER_ID_LENGTH);
@@ -175,7 +180,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public ApiResponse giveAdmin(long id) {
+    public ApiResponse setRoles(SetRolesRequest setRolesRequest, long id) {
 
         User user = userRepository.findById(id);
         if (user == null) throw new HandlingException(HttpStatus.NOT_FOUND,
@@ -184,29 +189,25 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
         Set<Role> roles = new HashSet<>();
 
-        roles.add(roleRepository.findByName(RoleName.ADMIN)
-                .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-//        roles.add(
-//                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-//                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
-        user.setRoles(roles);
-        userRepository.save(user);
-        return new ApiResponse(Boolean.TRUE, ResponseOperationName.GIVE_ADMIN_ROLE_TO_USER_SUCCESSFUL.toString());
-    }
+        //Convert Set to List
+        List<Role> list = new ArrayList<>();
+        list.addAll(setRolesRequest.getRole());
 
-    @Override
-    public ApiResponse removeAdmin(long id) {
-        User user = userRepository.findById(id);
-        if (user == null) throw new HandlingException(HttpStatus.NOT_FOUND,
-                EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage());
-        Set<Role> roles = new HashSet<>();
-//        roles.add(
-//                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
-//                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
+        for (int i = 0; i < setRolesRequest.getRole().size(); i++) {
+            roles.add(
+                    roleRepository.findByName(list.get(i).getName())
+                            .orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+                                    EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
+        }
+
+        roles.add(
+                roleRepository.findByName(RoleName.USER).orElseThrow(() -> new HandlingException(HttpStatus.NOT_FOUND,
+                        EnumConstants.USER_ROLE.getEnumConstants() + ErrorMessages.NOT_FOUND.getErrorMessage())));
+
         user.setRoles(roles);
+
         userRepository.save(user);
-        return new ApiResponse(Boolean.TRUE, ResponseOperationName.TAKE_ADMIN_ROLE_FROM_USER_SUCCESSFUL.toString());
+        return new ApiResponse(Boolean.TRUE, ResponseOperationName.SET_ROLES_TO_USER_SUCCESSFUL.toString());
     }
 
     @Override
